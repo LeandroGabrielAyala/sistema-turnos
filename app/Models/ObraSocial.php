@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ObraSocial extends Model
+{
+    protected $table = 'obras_socials';
+    
+    protected $fillable = ['alias', 'nombre'];
+
+    public function pacientes()
+    {
+        return $this->hasMany(Paciente::class);
+    }
+}
