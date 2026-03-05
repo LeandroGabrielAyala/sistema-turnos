@@ -31,6 +31,16 @@ class CreateTurno extends CreateRecord
         return $data;
     }
 
+    public function mount(): void
+    {
+        if ($this->record === null && request()->has('fecha')) {
+            $this->form->fill([
+                'fecha' => request()->get('fecha'),
+                'hora' => '09:00', // hora por defecto
+            ]);
+        }
+    }
+
     protected function getFormDefaults(): array
     {
         return [

@@ -4,22 +4,34 @@ namespace App\Filament\Resources\TurnoResource\Widgets;
 
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 use App\Models\Turno;
-use App\Models\Paciente;
 use Illuminate\Database\Eloquent\Model;
+
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Textarea;
-use Carbon\Carbon;
 
 class CalendarioTurnos extends FullCalendarWidget
 {
     public Model|string|null $model = Turno::class;
 
-    protected static array $config = [
-        'selectable' => true,
-        'editable' => true,
-    ];
+    public function config(): array
+    {
+        return [
+            'selectable' => true,
+            'editable' => true,
+
+            // Correcto para v3: detecta selección de días vacíos
+            'select' => [
+                'js' => <<<JS
+                    function(info) {
+                        const url = "/filament/resources/turnos/create?fecha=" + info.startStr + "&hora=09:00";
+                        window.location.href = url;
+                    }
+                JS
+            ],
+        ];
+    }
 
     public function getFormSchema(): array
     {
@@ -29,25 +41,24 @@ class CalendarioTurnos extends FullCalendarWidget
                 ->required(),
 
             DatePicker::make('fecha')->required(),
-
             TimePicker::make('hora')->required(),
-
             Textarea::make('observaciones'),
         ];
     }
 
-    /**
-     * Esto convierte TU modelo al formato que FullCalendar necesita
-     */
-    protected function getRecordData(Model $record): array
+    protected function getRecordData(?Model $record): array
     {
+        if (! $record) {
+            return [];
+        }
+
+        $start = $record->fecha->copy()->setTimeFromTimeString($record->hora);
+
         return [
             'id' => $record->id,
             'title' => $record->paciente->nombre ?? 'Turno',
-            'start' => Carbon::parse($record->fecha . ' ' . $record->hora)->toIso8601String(),
-            'end' => Carbon::parse($record->fecha . ' ' . $record->hora)
-                ->addMinutes(30)
-                ->toIso8601String(),
+            'start' => $start->toIso8601String(),
+            'end' => $start->copy()->addMinutes(30)->toIso8601String(),
         ];
     }
 
