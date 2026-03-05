@@ -5,7 +5,6 @@ namespace App\Filament\Resources\TurnoResource\Widgets;
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 use App\Models\Turno;
 use Illuminate\Database\Eloquent\Model;
-
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
@@ -20,12 +19,18 @@ class CalendarioTurnos extends FullCalendarWidget
         return [
             'selectable' => true,
             'editable' => true,
-
-            // Correcto para v3: detecta selección de días vacíos
             'select' => [
                 'js' => <<<JS
                     function(info) {
                         const url = "/filament/resources/turnos/create?fecha=" + info.startStr + "&hora=09:00";
+                        window.location.href = url;
+                    }
+                JS
+            ],
+            'eventClick' => [
+                'js' => <<<JS
+                    function(info) {
+                        const url = "/filament/resources/turnos/" + info.event.id + "/edit";
                         window.location.href = url;
                     }
                 JS
@@ -38,6 +43,7 @@ class CalendarioTurnos extends FullCalendarWidget
         return [
             Select::make('paciente_id')
                 ->relationship('paciente', 'nombre')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => ($record->apellido ?? '') . ', ' . ($record->nombre ?? ''))
                 ->required(),
 
             DatePicker::make('fecha')->required(),
@@ -48,15 +54,13 @@ class CalendarioTurnos extends FullCalendarWidget
 
     protected function getRecordData(?Model $record): array
     {
-        if (! $record) {
-            return [];
-        }
+        if (! $record) return [];
 
         $start = $record->fecha->copy()->setTimeFromTimeString($record->hora);
 
         return [
             'id' => $record->id,
-            'title' => $record->paciente->nombre ?? 'Turno',
+            'title' => $record->paciente ? $record->paciente->nombre_completo : 'Turno',
             'start' => $start->toIso8601String(),
             'end' => $start->copy()->addMinutes(30)->toIso8601String(),
         ];

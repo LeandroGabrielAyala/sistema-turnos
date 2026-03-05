@@ -13,14 +13,18 @@ class ListTurnos extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nuevo Turno'),
         ];
     }
 
-    protected function getHeaderWidgets(): array
+    public function getTitle(): string
     {
-        return [
-            \App\Filament\Resources\TurnoResource\Widgets\CalendarioTurnos::class,
-        ];
+        return 'Turnos';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Lista';
     }
 }

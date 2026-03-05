@@ -10,10 +10,42 @@ class EditTurno extends EditRecord
 {
     protected static string $resource = TurnoResource::class;
 
+    public function getTitle(): string
+    {
+        return "Editar Turno: {$this->record->paciente->apellido}, {$this->record->paciente->nombre}";
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Editar';
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            route('filament.admin.resources.turnos.index') => 'Turnos',
+            '#' => "{$this->record->paciente->apellido}, {$this->record->paciente->nombre}",
+            '' => 'Editar',
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Eliminar'),
         ];
+    }
+
+    protected function getSaveFormAction(): \Filament\Actions\Action
+    {
+        return parent::getSaveFormAction()
+            ->label('Guardar cambios');
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Cancelar');
     }
 }

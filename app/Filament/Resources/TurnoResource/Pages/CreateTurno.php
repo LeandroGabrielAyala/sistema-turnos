@@ -3,21 +3,21 @@
 namespace App\Filament\Resources\TurnoResource\Pages;
 
 use App\Filament\Resources\TurnoResource;
-use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateTurno extends CreateRecord
 {
     protected static string $resource = TurnoResource::class;
 
-    protected function afterCreate(): void
+    protected function getCreatedNotification(): ?Notification
     {
-        \Filament\Notifications\Notification::make()
-            ->title('Turno creado correctamente')
-            ->success()
-            ->send();
+        return Notification::make()
+            ->title('Turno Creado')
+            ->body('El turno fue registrado exitosamente.')
+            ->success();
     }
-
+    
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (request()->has('fecha')) {
@@ -30,22 +30,32 @@ class CreateTurno extends CreateRecord
 
         return $data;
     }
-
-    public function mount(): void
+    
+    public function getTitle(): string
     {
-        if ($this->record === null && request()->has('fecha')) {
-            $this->form->fill([
-                'fecha' => request()->get('fecha'),
-                'hora' => '09:00', // hora por defecto
-            ]);
-        }
+        return 'Crear Turno';
     }
 
-    protected function getFormDefaults(): array
+    public function getBreadcrumb(): string
     {
-        return [
-            'fecha' => request('fecha'),
-            'hora' => request('hora'),
-        ];
+        return 'Crear';
+    }
+
+    protected function getCreateFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCreateFormAction()
+            ->label('Crear');
+    }
+
+    protected function getCreateAnotherFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCreateAnotherFormAction()
+            ->label('Crear otro');
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Cancelar');
     }
 }
