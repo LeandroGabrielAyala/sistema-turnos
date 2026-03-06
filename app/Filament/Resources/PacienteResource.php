@@ -30,6 +30,7 @@ use Filament\Infolists\Components\Tabs\Tab;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use Carbon\Carbon;
 
@@ -54,11 +55,24 @@ class PacienteResource extends Resource
         return ['nombre', 'apellido', 'dni', 'telefono'];
     }
 
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return "{$record->apellido}, {$record->nombre}";
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'DNI' => $record->dni,
+            'Teléfono' => $record->telefono,
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
 
-            Forms\Components\Section::make('Datos Personales')
+            Section::make('Datos Personales')
                 ->schema([
                     TextInput::make('apellido')
                         ->label('Apellido')
@@ -174,14 +188,15 @@ class PacienteResource extends Resource
                 TextColumn::make('obraSocial.alias')
                     ->label('Obra Social'),
 
-                TextColumn::make('telefono')->label('Teléfono'),
+                TextColumn::make('telefono')->label('Teléfono')
+                ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('estado_civil')
                     ->label('Estado Civil')
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('alergias')->boolean()->label('Alergias'),
                 IconColumn::make('cirugias')->boolean()->label('Cirugías'),
-                TextColumn::make('peso')->suffix(' kg')->label('Peso'),
-                TextColumn::make('presion_arterial')->label('Presión arterial'),
+                TextColumn::make('peso')->suffix(' kg')->label('Peso')->badge()->color('primary'),
+                TextColumn::make('presion_arterial')->label('Presión arterial')->badge()->color('primary'),
             ])
 
             ->filters([
@@ -222,80 +237,67 @@ class PacienteResource extends Resource
             ->actions([
                 ViewAction::make()
                     ->label('Ver')
-                    ->modalHeading('Datos del Paciente')
+                    ->modalHeading(fn ($record) =>
+                        'Paciente: ' .
+                        $record->apellido . ' ' .
+                        $record->nombre .
+                        ' | DNI: ' .
+                        $record->dni
+                    )
                     ->modalWidth('5xl')
                     ->infolist([
                         Tabs::make('Tabs')
                             ->tabs([
 
                                 Tab::make('Datos Personales')
+                                    ->icon('heroicon-o-user')
                                     ->schema([
                                         TextEntry::make('nombre_completo')
-                                            ->label('Paciente')
-                                            ->state(fn ($record) => "{$record->apellido}, {$record->nombre}")
-                                            ->weight('bold')
-                                            ->size('lg'),
-                                        TextEntry::make('dni')->label('DNI')
-                                        ->weight('bold')
-                                            ->size('lg'),
+                                            ->label('◾ PACIENTE:')
+                                            ->state(fn ($record) => "{$record->apellido}, {$record->nombre}"),
+                                        TextEntry::make('dni')->label('◾ DNI:'),
                                         TextEntry::make('edad')
-                                            ->label('Edad')
-                                            ->suffix(' años')
-                                            ->weight('bold')
-                                            ->size('lg'),
+                                            ->label('◾ EDAD:')
+                                            ->suffix(' años'),
                                         TextEntry::make('fecha_nacimiento')
-                                            ->label('Fecha de nacimiento')
-                                            ->date('d/m/Y')
-                                            ->weight('bold')
-                                            ->size('lg'),
+                                            ->label('◾ FECHA DE NACIMIENTO:')
+                                            ->date('d/m/Y'),
                                         TextEntry::make('obra_social')
-                                            ->label('Obra Social')
+                                            ->label('◾ OBRA SOCIAL:')
                                             ->state(fn ($record) => 
                                                 $record->obraSocial 
                                                     ? "{$record->obraSocial->alias} - {$record->obraSocial->nombre}"
                                                     : '-'
                                             )
-                                            ->weight('bold')
-                                            ->size('lg'),
+                                            ->badge()
+                                            ->color('info'),
                                     ])
                                     ->columns(2),
 
                                 Tab::make('Información Social')
+                                    ->icon('heroicon-o-information-circle')
                                     ->schema([
-                                        TextEntry::make('estado_civil')
-                                        ->weight('bold')
-                                            ->size('lg'),
-                                        TextEntry::make('ocupacion')
-                                        ->weight('bold')
-                                            ->size('lg'),
-                                        TextEntry::make('domicilio')
-                                        ->weight('bold')
-                                            ->size('lg'),
-                                        TextEntry::make('telefono')
-                                        ->weight('bold')
-                                            ->size('lg'),
+                                        TextEntry::make('estado_civil')->label('◾ ESTADO CIVIL:'),
+                                        TextEntry::make('ocupacion')->label('◾ OCUPACIÓN:'),
+                                        TextEntry::make('domicilio')->label('◾ DOMICILIO:'),
+                                        TextEntry::make('telefono')->label('◾ TELÉFONO:'),
                                     ])
                                     ->columns(2),
 
                                 Tab::make('Información Médica')
+                                    ->icon('heroicon-o-heart')
                                     ->schema([
-                                        IconEntry::make('alergias')->boolean(),
-                                        IconEntry::make('cirugias')->boolean(),
+                                        IconEntry::make('alergias')->boolean()->label('◾ ALERGIA:'),
+                                        IconEntry::make('cirugias')->boolean()->label('◾ CIRUGÍA:'),
                                         TextEntry::make('detalle_alergias')
-                                            ->visible(fn ($record) => $record->alergias)
-                                            ->weight('bold')
-                                            ->size('lg'),
+                                            ->visible(fn ($record) => $record->alergias)->label('◾ DETALLE ALERGIA:'),
                                         TextEntry::make('detalle_cirugias')
-                                            ->visible(fn ($record) => $record->cirugias)
-                                            ->weight('bold')
-                                            ->size('lg'),
+                                            ->visible(fn ($record) => $record->cirugias)->label('◾ DETALLE CIRUGÍA:'),
                                         TextEntry::make('peso')
-                                            ->suffix(' kg')
-                                            ->weight('bold')
-                                            ->size('lg'),
-                                        TextEntry::make('presion_arterial')
-                                        ->weight('bold')
-                                            ->size('lg'),
+                                            ->suffix(' kg')->label('◾ PESO:')->badge()
+                                            ->color('info'),
+                                        TextEntry::make('presion_arterial')->label('◾ PRESIÓN ARTERIAL:')->badge()
+                                            ->color('info'),
                                     ])
                                     ->columns(2),
                             ]),

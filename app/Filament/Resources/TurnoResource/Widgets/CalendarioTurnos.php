@@ -17,38 +17,50 @@ class CalendarioTurnos extends FullCalendarWidget
     public function config(): array
     {
         return [
+            'locale' => 'es', // 👈 calendario en español
             'selectable' => true,
             'editable' => true,
-            'select' => [
-                'js' => <<<JS
-                    function(info) {
-                        const url = "/filament/resources/turnos/create?fecha=" + info.startStr + "&hora=09:00";
-                        window.location.href = url;
-                    }
-                JS
-            ],
-            'eventClick' => [
-                'js' => <<<JS
-                    function(info) {
-                        const url = "/filament/resources/turnos/" + info.event.id + "/edit";
-                        window.location.href = url;
-                    }
-                JS
+            'eventTimeFormat' => [
+                'hour' => '2-digit',
+                'minute' => '2-digit',
+                'hour12' => false, // 👈 esto fuerza formato 24h
             ],
         ];
+    }
+
+    protected function getModalFormModel(): Model|string|null
+    {
+        return Turno::class;
     }
 
     public function getFormSchema(): array
     {
         return [
             Select::make('paciente_id')
+                ->label('Paciente')
                 ->relationship('paciente', 'nombre')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => ($record->apellido ?? '') . ', ' . ($record->nombre ?? ''))
+                ->getOptionLabelFromRecordUsing(fn ($record) =>
+                    ($record->apellido ?? '') . ', ' . ($record->nombre ?? '')
+                )
+                ->searchable()
+                ->preload()
                 ->required(),
 
-            DatePicker::make('fecha')->required(),
-            TimePicker::make('hora')->required(),
-            Textarea::make('observaciones'),
+            DatePicker::make('fecha')
+                ->label('Fecha del Turno')
+                ->native(false)
+                ->required(),
+
+            TimePicker::make('hora')
+                ->label('Hora del Turno')
+                ->seconds(false)
+                ->required(),
+
+            Textarea::make('observaciones')
+                ->label('Observaciones')
+                ->placeholder('Agregar notas del turno, indicaciones, etc.')
+                ->rows(3)
+                ->columnSpanFull(),
         ];
     }
 

@@ -21,19 +21,19 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Infolists\Components\TextEntry;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class TurnoResource extends Resource
 {
     protected static ?string $model = Turno::class;
-    protected static ?string $navigationGroup = 'Agenda';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     protected static ?string $modelLabel = 'Turno';
     protected static ?string $pluralModelLabel = 'Turnos';
+    
+    protected static ?string $navigationGroup = 'Agenda';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationLabel = 'Turnos';
     protected static ?string $slug = 'turnos';
 
@@ -48,6 +48,20 @@ class TurnoResource extends Resource
             'estado',
             'paciente.nombre',
             'paciente.apellido',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->paciente->apellido . ', ' . $record->paciente->nombre;
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Fecha' => $record->fecha->format('d/m/Y'),
+            'Hora' => \Carbon\Carbon::parse($record->hora)->format('H:i'),
+            'Estado' => ucfirst($record->estado),
         ];
     }
 
@@ -181,21 +195,23 @@ class TurnoResource extends Resource
             ->actions([
                 ViewAction::make()
                     ->label('Ver')
-                    ->modalHeading('Detalle del Turno')
+                    ->modalHeading(fn ($record) => 
+                        'Detalle del Turno - ' . $record->fecha->format('d/m/Y') . ' ' . $record->hora
+                    )
                     ->modalWidth('4xl')
                     ->infolist([
                         Tabs::make('Tabs')
                             ->tabs([
                                 Tab::make('Estado')
+                                    ->icon('heroicon-o-bookmark')
                                     ->label(fn ($record) => 'Estado: ' . ucfirst($record->estado))
                                     ->schema([
                                         TextEntry::make('paciente.nombre_completo')
-                                            ->label('Paciente')
-                                            ->weight('medium')
+                                            ->label('◾ PACIENTE:')
                                             ->size('md'),
 
                                         TextEntry::make('paciente.obraSocial.id')
-                                            ->label('Obra Social')
+                                            ->label('◾ OBRA SOCIAL:')
                                             ->formatStateUsing(function ($record) {
                                                 $obra = $record->paciente->obraSocial;
 
@@ -206,74 +222,68 @@ class TurnoResource extends Resource
                                                 return "{$obra->alias} - {$obra->nombre}";
                                             })
                                             ->badge()
-                                            ->color('info'),
+                                            ->color('primary'),
 
                                         TextEntry::make('fecha')
+                                            ->label('◾ FECHA:')
                                             ->date('d/m/Y')
-                                            ->weight('medium')
-                                            ->size('md'),
+                                            ->badge()
+                                            ->color('primary'),
 
                                         TextEntry::make('hora')
-                                            ->weight('medium')
-                                            ->size('md'),
-
-                                        // TextEntry::make('estado')
-                                        //     ->badge(),
+                                            ->label('◾ HORA:')
+                                            ->badge()
+                                            ->color('primary'),
 
                                         TextEntry::make('observaciones')
-                                            ->weight('medium')
-                                            ->size('md')                                        ->columnSpanFull(),
+                                            ->label('◾ OBSERVACIONES:')
+                                            ->columnSpanFull(),
                                     ])
                                     ->columns(2),
-                                Tab::make('Información del Paciente')
+                                Tab::make('Datos del Paciente')
+                                    ->icon('heroicon-o-user')
                                     ->schema([
-                                        TextEntry::make('paciente.dni')->label('DNI')->weight('medium')
-                                            ->size('md'),
-                                        TextEntry::make('paciente.fecha_nacimiento')->label('Fecha de Nacimiento')->date('d/m/Y')->weight('medium')
-                                            ->size('md'),
+                                        TextEntry::make('paciente.dni')->label('◾ DNI:'),
+                                        TextEntry::make('paciente.fecha_nacimiento')->label('◾ FECHA DE NACIMIENTO:')->date('d/m/Y'),
 
-                                        TextEntry::make('paciente.domicilio')->label('Domicilio')->placeholder('No informado')->weight('medium')
-                                            ->size('md'),
-                                        TextEntry::make('paciente.telefono')->label('Teléfono')->placeholder('No informado')->weight('medium')
-                                            ->size('md'),
+                                        TextEntry::make('paciente.domicilio')->label('◾ DOMICILIO:')->placeholder('No informado'),
+                                        TextEntry::make('paciente.telefono')->label('◾ TELÉFONO:')->placeholder('No informado'),
 
                                         TextEntry::make('paciente.estado_civil')
-                                            ->label('Estado Civil')->weight('medium')
-                                            ->size('md')
+                                            ->label('◾ ESTADO CIVIL:')
                                             ->formatStateUsing(fn ($state) => $state ? ucfirst($state) : 'No informado'),
 
-                                        TextEntry::make('paciente.ocupacion')->label('Ocupación')->placeholder('No informada')->weight('medium')
-                                            ->size('md'),
+                                        TextEntry::make('paciente.ocupacion')->label('◾ OCUPACIÓN:')->placeholder('No informada'),
                                     ])
                                     ->columns(2),
                                 Tab::make('Información Médica')
+                                    ->icon('heroicon-o-heart')
                                     ->schema([
 
-                                        IconEntry::make('paciente.alergias')->boolean(),
-                                        IconEntry::make('paciente.cirugias')->boolean(),
+                                        IconEntry::make('paciente.alergias')->label('◾ ALERGIA:')->boolean(),
+                                        IconEntry::make('paciente.cirugias')->label('◾ CIRUGÍA')->boolean(),
 
                                         TextEntry::make('paciente.detalle_alergias')
-                                            ->label('Detalle Alergias')
-                                            ->visible(fn ($record) => $record->paciente->alergias)->weight('medium')
-                                            ->size('md'),
+                                            ->label('◾ DETALLE ALERGIA:')
+                                            ->visible(fn ($record) => $record->paciente->alergias),
 
                                         TextEntry::make('paciente.detalle_cirugias')
-                                            ->label('Detalle Cirugías')
-                                            ->visible(fn ($record) => $record->paciente->cirugias)->weight('medium')
-                                            ->size('md'),
+                                            ->label('◾ DETALLE CIRUGÍA:')
+                                            ->visible(fn ($record) => $record->paciente->cirugias),
 
                                         TextEntry::make('paciente.enfermedades_hereditarias')
-                                            ->label('Enfermedades Hereditarias')->weight('medium')
-                                            ->size('md'),
+                                            ->label('◾ ENFERMEDADES HEREDITARIAS:'),
 
                                         TextEntry::make('paciente.medicacion_actual')
-                                            ->label('Medicación Actual')->weight('medium')
-                                            ->size('md'),
+                                            ->label('◾ MEDICACIÓN ACTUAL:'),
 
-                                        TextEntry::make('paciente.peso')->label('Peso (kg)')->weight('medium')
-                                            ->size('md'),
-                                        TextEntry::make('paciente.presion_arterial')->label('Presión Arterial')->weight('medium')
-                                            ->size('md'),
+                                        TextEntry::make('paciente.peso')->label('◾ PESO (kg):')
+                                            ->badge()
+                                            ->color('primary'),
+
+                                        TextEntry::make('paciente.presion_arterial')->label('◾ PRESIÓN ARTERIAL:')
+                                            ->badge()
+                                            ->color('primary'),
                                     ])
                                     ->columns(2),
                             ]),

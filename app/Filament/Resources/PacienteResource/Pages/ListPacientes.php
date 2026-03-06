@@ -13,6 +13,14 @@ class ListPacientes extends ListRecords
 {
     protected static string $resource = PacienteResource::class;
 
+    public function getBreadcrumbs(): array
+    {
+        return [
+            route('filament.admin.resources.pacientes.index') => 'Pacientes',
+            '' => 'Editar',
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -23,7 +31,7 @@ class ListPacientes extends ListRecords
 
     public function getTitle(): string
     {
-        return 'Pacientes';
+        return 'Lista de Pacientes';
     }
 
     public function getBreadcrumb(): string

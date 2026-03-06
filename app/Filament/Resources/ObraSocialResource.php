@@ -2,11 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Resources\ObraSocialResource\Pages\CreateObraSocial;
+use App\Filament\Resources\ObraSocialResource\Pages\ListObraSocials;
+use App\Filament\Resources\ObraSocialResource\Pages\EditObraSocial;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Filament\Forms\Form;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
 use App\Models\ObraSocial;
 
 class ObraSocialResource extends Resource
@@ -20,12 +25,19 @@ class ObraSocialResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('alias')
+            TextInput::make('alias')
+                ->label('Alias de la Obra Social')
                 ->required()
-                ->unique(ignoreRecord: true),
+                ->unique(ignoreRecord: true)
+                ->helperText('Debe ser un alias único para la obra social.')
+                ->placeholder('Ej: OSDE, Swiss Medical, etc.')
+                ->columnSpanFull(),
 
-            Forms\Components\TextInput::make('nombre')
-                ->required(),
+            TextInput::make('nombre')
+                ->label('Nombre Completo de la Obra Social')
+                ->placeholder('Ej: Obra Social para los Docentes...')
+                ->required()
+                ->columnSpanFull(),
         ]);
     }
 
@@ -34,25 +46,25 @@ class ObraSocialResource extends Resource
         return $table
             ->searchable()
             ->columns([
-                Tables\Columns\TextColumn::make('alias')
+                TextColumn::make('alias')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('nombre')
+                TextColumn::make('nombre')
                     ->searchable(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->modalWidth('lg'),
-                Tables\Actions\EditAction::make(),
+                ViewAction::make()->modalWidth('lg'),
+                EditAction::make(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Resources\ObraSocialResource\Pages\ListObraSocials::route('/'),
-            'create' => \App\Filament\Resources\ObraSocialResource\Pages\CreateObraSocial::route('/create'),
-            'edit' => \App\Filament\Resources\ObraSocialResource\Pages\EditObraSocial::route('/{record}/edit'),
+            'index' => ListObraSocials::route('/'),
+            'create' => CreateObraSocial::route('/create'),
+            'edit' => EditObraSocial::route('/{record}/edit'),
         ];
     }
 }

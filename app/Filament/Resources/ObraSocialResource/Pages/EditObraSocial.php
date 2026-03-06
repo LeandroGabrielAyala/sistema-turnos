@@ -10,10 +10,42 @@ class EditObraSocial extends EditRecord
 {
     protected static string $resource = ObraSocialResource::class;
 
+    public function getTitle(): string
+    {
+        return "Editar Obra Social: {$this->record->alias} - {$this->record->nombre}";
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Editar';
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            route('filament.admin.resources.obra-socials.index') => 'Obras Sociales',
+            '#' => "{$this->record->alias}",
+            '' => 'Editar',
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Eliminar'),
         ];
+    }
+
+    protected function getSaveFormAction(): \Filament\Actions\Action
+    {
+        return parent::getSaveFormAction()
+            ->label('Guardar cambios');
+    }
+
+    protected function getCancelFormAction(): \Filament\Actions\Action
+    {
+        return parent::getCancelFormAction()
+            ->label('Cancelar');
     }
 }
