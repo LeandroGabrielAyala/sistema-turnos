@@ -1,45 +1,43 @@
-<div class="flex flex-col h-[500px] border rounded-lg">
+<div class="max-w-xl mx-auto border rounded p-4">
 
-    <div class="flex-1 overflow-y-auto p-4 space-y-2" id="messages">
-
-        @foreach($messages as $msg)
-
-            <div class="p-2 bg-gray-100 rounded-lg">
-                {{ $msg['message'] }}
+    <div class="h-80 overflow-y-auto mb-4 border p-2">
+        @foreach($messages as $message)
+            <div class="mb-2">
+                <strong>{{ $message['sender_name'] ?? 'Usuario' }}:</strong>
+                {{ $message['message'] ?? $message['content'] }}
             </div>
-
         @endforeach
-
     </div>
 
-    <div class="border-t p-2 flex gap-2">
-
-        <input
-            type="text"
-            wire:model="message"
-            wire:keydown.enter="sendMessage"
-            class="flex-1 border rounded px-2 py-1"
+    <form wire:submit.prevent="sendMessage" class="flex gap-2">
+        <input 
+            type="text" 
+            wire:model="message" 
+            class="border p-2 flex-1 rounded"
             placeholder="Escribe un mensaje..."
         >
 
-        <button
-            wire:click="sendMessage"
-            class="bg-blue-500 text-white px-3 py-1 rounded"
+        <button 
+            type="submit" 
+            class="bg-blue-500 text-white px-4 py-2 rounded"
         >
             Enviar
         </button>
-
-    </div>
+    </form>
 
 </div>
 
 <script>
+document.addEventListener('livewire:init', () => {
 
     Echo.private('chat.{{ $conversationId }}')
-    .listen('MessageSent', (e) => {
+        .listen('.MessageSent', (e) => {
 
-        Livewire.dispatch('messageReceived', e);
+            console.log('Nuevo mensaje recibido:', e);
 
-    });
+            Livewire.dispatch('messageReceived', { event: e });
 
+        });
+
+});
 </script>

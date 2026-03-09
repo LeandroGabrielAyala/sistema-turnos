@@ -12,6 +12,16 @@ class ChatBox extends Component
     public $conversationId;
     public $message = '';
     public $messages = [];
+    protected $listeners = ['messageReceived'];
+
+    public function messageReceived($event)
+    {
+        if ($event['sender_id'] == auth()->id()) {
+            return;
+        }
+
+        $this->messages[] = $event;
+    }
 
     public function mount($conversationId)
     {

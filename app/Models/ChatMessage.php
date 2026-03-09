@@ -12,4 +12,9 @@ class ChatMessage extends Model
         'message',
         'read_at'
     ];
+
+    public function sender()
+    {
+        return $this->belongsTo(User::class, 'sender_id');
+    }
 }
