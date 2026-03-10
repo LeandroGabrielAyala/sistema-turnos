@@ -14,3 +14,9 @@ Route::get('/chat-test', function () {
 Route::get('/generate-password', function () {
     return Hash::make('123456');
 });
+
+Route::get('/chat/unread-count', function () {
+    return \App\Models\ChatMessage::whereNull('read_at')
+        ->where('sender_id', '!=', auth()->id())
+        ->count();
+})->middleware('auth');

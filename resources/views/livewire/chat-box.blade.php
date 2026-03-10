@@ -14,7 +14,7 @@
 
             <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}">
 
-                <div class="max-w-xs px-4 py-2 rounded-lg shadow text-sm
+                <div class="max-w-xs px-4 py-2 rounded-lg shadow text-sm break-words
                     {{ $isMine 
                         ? 'bg-primary-600 text-white dark:bg-primary-500' 
                         : 'bg-white text-gray-900 border dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
@@ -38,6 +38,13 @@
 
         @endforeach
 
+        <div 
+            id="typing-indicator"
+            class="text-xs text-gray-500 italic px-2"
+            style="display:none;"
+        >
+        </div>
+
     </div>
 
     <form wire:submit.prevent="sendMessage"
@@ -45,7 +52,8 @@
 
         <input
             type="text"
-            wire:model="message"
+            wire:model.live="message"
+            wire:keydown.debounce.700ms="typing"
             placeholder="Escribe un mensaje..."
             class="flex-1 border rounded px-3 py-2 
                    bg-white text-gray-900
@@ -75,6 +83,16 @@
         chat.scrollTop = chat.scrollHeight;
 
     }
+
+    window.addEventListener('load', () => {
+
+        setTimeout(() => {
+
+            scrollToBottom();
+
+        }, 200);
+
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -106,9 +124,59 @@
 
                 console.log('Realtime recibido:', e);
 
+                if (e.sender_name !== "{{ auth()->user()->name }}") {
+
+                    fetch('/chat/unread-count')
+                        .then(res => res.text())
+                        .then(count => {
+
+                            const badge = document.querySelector('.fi-sidebar-item-badge');
+
+                            if (!badge) return;
+
+                            if (count > 0) {
+                                badge.innerText = count;
+                                badge.style.display = 'inline-flex';
+                            } else {
+                                badge.style.display = 'none';
+                            }
+
+                        });
+                    }
+
                 Livewire.dispatch('messageReceived', { event: e });
 
-            });
+            })
+
+            .listen('.UserTyping', (e) => {
+
+                if (e.user === "{{ auth()->user()->name }}") {
+                    return;
+                }
+
+                const typingBox = document.getElementById('typing-indicator');
+
+                if (!typingBox) return;
+
+                typingBox.innerText = e.user + " está escribiendo...";
+
+                typingBox.style.display = "block";
+
+                setTimeout(() => {
+                    typingBox.style.display = "none";
+                }, 1500);
+
+            })
+
+    });
+
+    window.addEventListener('chat-message-received', () => {
+
+        const navigation = document.querySelector('[data-panel-id]');
+
+        if (!navigation) return;
+
+        Livewire.navigate(window.location.href);
 
     });
 

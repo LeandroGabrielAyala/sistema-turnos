@@ -8,6 +8,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Conversation;
 
 class MessageSent implements ShouldBroadcast
 {
@@ -20,9 +21,16 @@ class MessageSent implements ShouldBroadcast
         $this->message = $message;
     }
 
-    public function broadcastOn(): Channel
+    public function broadcastOn(): array
     {
-        return new PrivateChannel('chat.' . $this->message->conversation_id);
+        $receiverId = \App\Models\ChatMessage::where('conversation_id', $this->message->conversation_id)
+            ->where('sender_id', '!=', $this->message->sender_id)
+            ->value('sender_id');
+
+        return [
+            new PrivateChannel('chat.' . $this->message->conversation_id),
+            new PrivateChannel('user.' . $receiverId),
+        ];
     }
 
     public function broadcastAs(): string

@@ -12,8 +12,36 @@ class ChatBox extends Component
     public $conversationId;
     public $message = '';
     public $messages = [];
+    public $typingUser = null;
+    public $isTyping = false;
 
-    protected $listeners = ['messageReceived'];
+    protected $listeners = [
+        'messageReceived',
+        'userTyping'
+    ];
+
+    public function userTyping($user)
+    {
+        if ($user == auth()->user()->name) {
+            return;
+        }
+
+        $this->typingUser = $user;
+
+        $this->isTyping = true;
+
+        $this->dispatch('clearTyping');
+    }
+
+    public function typing()
+    {
+        broadcast(
+            new \App\Events\UserTyping(
+                $this->conversationId,
+                auth()->user()->name
+            )
+        )->toOthers();
+    }
 
     public function messageReceived($event = null)
     {
@@ -25,12 +53,27 @@ class ChatBox extends Component
             return;
         }
 
+        // marcar como leído
+        \App\Models\ChatMessage::where('id', $event['id'])
+            ->update([
+                'read_at' => now()
+            ]);
+
         $this->messages[] = $event;
+
+        $this->dispatch('refresh-navigation');
     }
 
     public function mount($conversationId)
     {
         $this->conversationId = $conversationId;
+
+        ChatMessage::where('conversation_id', $conversationId)
+            ->whereNull('read_at')
+            ->where('sender_id', '!=', auth()->id())
+            ->update([
+                'read_at' => now()
+            ]);
 
         $this->messages = ChatMessage::with('sender')
             ->where('conversation_id', $conversationId)
@@ -58,7 +101,7 @@ class ChatBox extends Component
             'message' => $this->message,
         ]);
 
-        broadcast(new \App\Events\MessageSent($msg))->toOthers();
+        broadcast(new MessageSent($msg));
 
         // AGREGAR MENSAJE LOCALMENTE
         $this->messages[] = [
