@@ -12,30 +12,41 @@ class ChatBox extends Component
     public $conversationId;
     public $message = '';
     public $messages = [];
+
     protected $listeners = ['messageReceived'];
 
-    public function messageReceived($data = null)
+    public function messageReceived($event = null)
     {
-        if (!$data) {
+        if (!$event) {
             return;
         }
 
-        if ($data['sender_id'] == auth()->id()) {
+        if ($event['sender_id'] == auth()->id()) {
             return;
         }
 
-        $this->messages[] = $data;
+        $this->messages[] = $event;
     }
 
     public function mount($conversationId)
     {
         $this->conversationId = $conversationId;
 
-        $this->messages = ChatMessage::where('conversation_id', $conversationId)
+        $this->messages = ChatMessage::with('sender')
+            ->where('conversation_id', $conversationId)
             ->latest()
             ->take(50)
             ->get()
             ->reverse()
+            ->map(function ($msg) {
+                return [
+                    'id' => $msg->id,
+                    'message' => $msg->message,
+                    'sender_id' => $msg->sender_id,
+                    'sender_name' => $msg->sender->name,
+                    'created_at' => $msg->created_at,
+                ];
+            })
             ->toArray();
     }
 
