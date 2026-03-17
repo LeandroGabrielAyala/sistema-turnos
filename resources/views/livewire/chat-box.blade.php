@@ -113,36 +113,69 @@
     });
 
 
-    document.addEventListener('livewire:navigated', () => {
+    // document.addEventListener('livewire:navigated', () => {
 
-        if (window.chatListenerLoaded) return;
+    //     // FUNCIONA EN LOCAL :
+    //     // if (window.chatListenerLoaded) return;
+    //     // window.chatListenerLoaded = true;
 
-        window.chatListenerLoaded = true;
+    //     Echo.private('chat.{{ $conversationId }}')
+    //         .listen('.MessageSent', (e) => {
+
+    //             console.log('Realtime recibido:', e);
+
+    //             if (e.sender_name !== "{{ auth()->user()->name }}") {
+
+    //                 fetch('/chat/unread-count')
+    //                     .then(res => res.text())
+    //                     .then(count => {
+
+    //                         const badge = document.querySelector('.fi-sidebar-item-badge');
+
+    //                         if (!badge) return;
+
+    //                         if (count > 0) {
+    //                             badge.innerText = count;
+    //                             badge.style.display = 'inline-flex';
+    //                         } else {
+    //                             badge.style.display = 'none';
+    //                         }
+
+    //                     });
+    //                 }
+
+    //             Livewire.dispatch('messageReceived', { event: e });
+
+    //         })
+
+    //         .listen('.UserTyping', (e) => {
+
+    //             if (e.user === "{{ auth()->user()->name }}") {
+    //                 return;
+    //             }
+
+    //             const typingBox = document.getElementById('typing-indicator');
+
+    //             if (!typingBox) return;
+
+    //             typingBox.innerText = e.user + " está escribiendo...";
+
+    //             typingBox.style.display = "block";
+
+    //             setTimeout(() => {
+    //                 typingBox.style.display = "none";
+    //             }, 1500);
+
+    //         })
+
+    // });
+
+    document.addEventListener('livewire:init', () => {
 
         Echo.private('chat.{{ $conversationId }}')
             .listen('.MessageSent', (e) => {
 
                 console.log('Realtime recibido:', e);
-
-                if (e.sender_name !== "{{ auth()->user()->name }}") {
-
-                    fetch('/chat/unread-count')
-                        .then(res => res.text())
-                        .then(count => {
-
-                            const badge = document.querySelector('.fi-sidebar-item-badge');
-
-                            if (!badge) return;
-
-                            if (count > 0) {
-                                badge.innerText = count;
-                                badge.style.display = 'inline-flex';
-                            } else {
-                                badge.style.display = 'none';
-                            }
-
-                        });
-                    }
 
                 Livewire.dispatch('messageReceived', { event: e });
 
@@ -150,23 +183,20 @@
 
             .listen('.UserTyping', (e) => {
 
-                if (e.user === "{{ auth()->user()->name }}") {
-                    return;
-                }
+                if (e.user === "{{ auth()->user()->name }}") return;
 
                 const typingBox = document.getElementById('typing-indicator');
 
                 if (!typingBox) return;
 
                 typingBox.innerText = e.user + " está escribiendo...";
-
                 typingBox.style.display = "block";
 
                 setTimeout(() => {
                     typingBox.style.display = "none";
                 }, 1500);
 
-            })
+            });
 
     });
 
