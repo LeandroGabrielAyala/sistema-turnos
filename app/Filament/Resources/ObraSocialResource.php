@@ -20,6 +20,7 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\ObraSocialResource\Pages\ListObraSocials;
 use App\Filament\Resources\ObraSocialResource\Pages\CreateObraSocial;
 use App\Filament\Resources\ObraSocialResource\Pages\EditObraSocial;
+use App\Filament\Resources\ObraSocialResource\RelationManagers\PacientesRelationManager;
 
 class ObraSocialResource extends Resource
 {
@@ -157,6 +158,19 @@ class ObraSocialResource extends Resource
             'Nombre' => $record->nombre,
         ];
     }
+
+    
+
+    /**
+     * Relation Manager Pacientes
+     */
+    public static function getRelations(): array
+    {
+        return [
+            PacientesRelationManager::class,
+        ];
+    }
+
 
     /**
      * RUTAS DE PÁGINAS

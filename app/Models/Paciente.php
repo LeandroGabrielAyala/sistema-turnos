@@ -42,4 +42,9 @@ class Paciente extends Model
     {
         return "{$this->apellido}, {$this->nombre}";
     }
+
+    public function turnos()
+    {
+        return $this->hasMany(\App\Models\Turno::class);
+    }
 }

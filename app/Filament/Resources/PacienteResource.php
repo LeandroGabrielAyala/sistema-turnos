@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\ObraSocialResource\RelationManagers\TurnosRelationManager;
 use App\Models\Paciente;
 use App\Models\ObraSocial;
 
@@ -383,6 +384,16 @@ class PacienteResource extends Resource
                 DeleteBulkAction::make()->label('Eliminar seleccionados'),
                 ExportBulkAction::make()->label('Exportar seleccionados'),
             ]);
+    }
+
+    /**
+     * 🔹 Relation Manager con Turnos
+     */
+    public static function getRelations(): array
+    {
+        return [
+            TurnosRelationManager::class,
+        ];
     }
 
     /**
