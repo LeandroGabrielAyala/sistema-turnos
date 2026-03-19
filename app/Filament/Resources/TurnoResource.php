@@ -299,20 +299,53 @@ class TurnoResource extends Resource
                 /**
                  * 👁 VER
                  */
-                ViewAction::make()
-                    ->label('Ver')
-                    ->modalHeading(fn ($record) =>
-                        'Detalle del Turno - ' .
-                        $record->fecha->format('d/m/Y') . ' ' .
-                        $record->hora
-                    )
-                    ->modalWidth('4xl')
-                    ->infolist([
-                        Tabs::make('Tabs')
-                            ->tabs([
-                                // (se mantiene tu infolist completo tal cual)
-                            ]),
-                    ]),
+            ViewAction::make()
+                ->label('Ver')
+                ->modalHeading(fn ($record) =>
+                    'Detalle del Turno - ' .
+                    $record->fecha->format('d/m/Y') . ' ' .
+                    $record->hora
+                )
+                ->modalWidth('4xl')
+                ->infolist([
+                    Tabs::make('Tabs')
+                        ->tabs([
+
+                            Tab::make('Estado')
+                                ->icon('heroicon-o-bookmark')
+                                ->schema([
+                                    TextEntry::make('paciente.nombre_completo')
+                                        ->label('Paciente'),
+
+                                    TextEntry::make('fecha')
+                                        ->date('d/m/Y')
+                                        ->label('Fecha'),
+
+                                    TextEntry::make('hora')
+                                        ->label('Hora'),
+
+                                    TextEntry::make('estado')
+                                        ->label('Estado'),
+
+                                    TextEntry::make('observaciones')
+                                        ->label('Observaciones')
+                                        ->columnSpanFull(),
+                                ])
+                                ->columns(2),
+
+                            Tab::make('Paciente')
+                                ->icon('heroicon-o-user')
+                                ->schema([
+                                    TextEntry::make('paciente.dni')->label('DNI'),
+                                    TextEntry::make('paciente.telefono')->label('Teléfono'),
+
+                                    TextEntry::make('paciente.obraSocial.alias')
+                                        ->label('Obra Social'),
+                                ])
+                                ->columns(2),
+
+                        ]),
+                ]),
 
                 /**
                  * ✏️ EDITAR
