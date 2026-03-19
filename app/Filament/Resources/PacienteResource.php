@@ -147,111 +147,121 @@ class PacienteResource extends Resource
     /**
      * 🧾 FORMULARIO (Crear / Editar)
      */
-    public static function form(Form $form): Form
-    {
-        return $form->schema([
+public static function form(Form $form): Form
+{
+    return $form->schema([
 
-            /**
-             * 🔹 DATOS PERSONALES
-             */
-            Section::make('Datos Personales')
-                ->schema([
-                    TextInput::make('apellido')
-                        ->label('Apellido')
-                        ->required(),
+        Tabs::make('Paciente')
+            ->tabs([
 
-                    TextInput::make('nombre')
-                        ->label('Nombre')
-                        ->required(),
+                /**
+                 * 🔹 TAB 1: DATOS PERSONALES
+                 */
+                Tab::make('Datos Personales')
+                    ->icon('heroicon-o-user')
+                    ->schema([
+                        TextInput::make('apellido')
+                            ->label('Apellido')
+                            ->required(),
 
-                    TextInput::make('dni')
-                        ->label('DNI')
-                        ->unique(ignoreRecord: true)
-                        ->required(),
+                        TextInput::make('nombre')
+                            ->label('Nombre')
+                            ->required(),
 
-                    DatePicker::make('fecha_nacimiento')
-                        ->label('Fecha de nacimiento')
-                        ->required(),
+                        TextInput::make('dni')
+                            ->label('DNI')
+                            ->unique(ignoreRecord: true)
+                            ->required(),
 
-                    Select::make('obra_social_id')
-                        ->label('Obra Social')
-                        ->relationship('obraSocial', 'alias')
-                        ->getOptionLabelFromRecordUsing(fn ($record) =>
-                            "{$record->alias} - {$record->nombre}"
-                        )
-                        ->searchable()
-                        ->preload()
-                        ->columnSpanFull(),
-                ])
-                ->columns(2),
+                        DatePicker::make('fecha_nacimiento')
+                            ->label('Fecha de nacimiento')
+                            ->required(),
 
-            /**
-             * 🔹 INFORMACIÓN SOCIAL
-             */
-            Section::make('Información Social')
-                ->schema([
-                    Select::make('estado_civil')
-                        ->label('Estado Civil')
-                        ->options([
-                            'soltero' => 'Soltero',
-                            'casado' => 'Casado',
-                            'divorciado' => 'Divorciado',
-                            'viudo' => 'Viudo',
-                        ]),
+                        Select::make('obra_social_id')
+                            ->label('Obra Social')
+                            ->relationship('obraSocial', 'alias')
+                            ->getOptionLabelFromRecordUsing(fn ($record) =>
+                                "{$record->alias} - {$record->nombre}"
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
 
-                    TextInput::make('ocupacion')->label('Ocupación'),
+                /**
+                 * 🔹 TAB 2: INFORMACIÓN SOCIAL
+                 */
+                Tab::make('Información Social')
+                    ->icon('heroicon-o-home')
+                    ->schema([
+                        Select::make('estado_civil')
+                            ->label('Estado Civil')
+                            ->options([
+                                'soltero' => 'Soltero',
+                                'casado' => 'Casado',
+                                'divorciado' => 'Divorciado',
+                                'viudo' => 'Viudo',
+                            ]),
 
-                    TextInput::make('domicilio')
-                        ->label('Domicilio')
-                        ->required(),
+                        TextInput::make('ocupacion')
+                            ->label('Ocupación'),
 
-                    TextInput::make('telefono')
-                        ->numeric()
-                        ->label('Teléfono')
-                        ->required(),
-                ])
-                ->columns(2),
+                        TextInput::make('domicilio')
+                            ->label('Domicilio')
+                            ->required(),
 
-            /**
-             * 🔹 INFORMACIÓN MÉDICA
-             */
-            Section::make('Información Médica')
-                ->schema([
-                    Toggle::make('alergias')
-                        ->label('¿Tiene alergias?')
-                        ->live(),
+                        TextInput::make('telefono')
+                            ->numeric()
+                            ->label('Teléfono')
+                            ->required(),
+                    ])
+                    ->columns(2),
 
-                    Textarea::make('detalle_alergias')
-                        ->label('Detalle de alergias')
-                        ->visible(fn ($get) => $get('alergias')),
+                /**
+                 * 🔹 TAB 3: INFORMACIÓN MÉDICA
+                 */
+                Tab::make('Información Médica')
+                    ->icon('heroicon-o-heart')
+                    ->schema([
 
-                    Toggle::make('cirugias')
-                        ->label('¿Tiene cirugías?')
-                        ->live(),
+                        Toggle::make('alergias')
+                            ->label('¿Tiene alergias?')
+                            ->live(),
 
-                    Textarea::make('detalle_cirugias')
-                        ->label('Detalle de cirugías')
-                        ->visible(fn ($get) => $get('cirugias')),
+                        Textarea::make('detalle_alergias')
+                            ->label('Detalle de alergias')
+                            ->visible(fn ($get) => $get('alergias')),
 
-                    Textarea::make('enfermedades_hereditarias')
-                        ->label('Enfermedades hereditarias')
-                        ->columnSpanFull(),
+                        Toggle::make('cirugias')
+                            ->label('¿Tiene cirugías?')
+                            ->live(),
 
-                    Textarea::make('medicacion_actual')
-                        ->label('Medicación actual')
-                        ->columnSpanFull(),
+                        Textarea::make('detalle_cirugias')
+                            ->label('Detalle de cirugías')
+                            ->visible(fn ($get) => $get('cirugias')),
 
-                    TextInput::make('peso')
-                        ->label('Peso')
-                        ->numeric()
-                        ->suffix('kg'),
+                        Textarea::make('enfermedades_hereditarias')
+                            ->label('Enfermedades hereditarias')
+                            ->columnSpanFull(),
 
-                    TextInput::make('presion_arterial')
-                        ->label('Presión Arterial'),
-                ])
-                ->columns(2),
-        ]);
-    }
+                        Textarea::make('medicacion_actual')
+                            ->label('Medicación actual')
+                            ->columnSpanFull(),
+
+                        TextInput::make('peso')
+                            ->label('Peso')
+                            ->numeric()
+                            ->suffix('kg'),
+
+                        TextInput::make('presion_arterial')
+                            ->label('Presión Arterial'),
+                    ])
+                    ->columns(2),
+            ])
+            ->columnSpanFull(),
+    ]);
+}
 
     /**
      * 📊 TABLA DE REGISTROS

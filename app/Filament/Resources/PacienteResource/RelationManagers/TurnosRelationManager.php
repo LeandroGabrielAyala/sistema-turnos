@@ -27,8 +27,8 @@ class TurnosRelationManager extends RelationManager
                 TextColumn::make('hora')
                     ->label('Hora'),
 
-                TextColumn::make('paciente.nombre_completo')
-                    ->label('Paciente'),
+                // TextColumn::make('paciente.nombre_completo')
+                //     ->label('Paciente'),
 
                 TextColumn::make('estado')
                     ->label('Estado')
@@ -43,15 +43,15 @@ class TurnosRelationManager extends RelationManager
 
             ->actions([
                 ViewAction::make()->label('Ver'),
-            ])
-            ->filters([
-                SelectFilter::make('estado')
-                    ->options([
-                        'pendiente' => 'Pendiente',
-                        'confirmado' => 'Confirmado',
-                        'cancelado' => 'Cancelado',
-                        'atendido' => 'Atendido',
-                    ])
             ]);
+            // ->filters([
+            //     SelectFilter::make('estado')
+            //         ->options([
+            //             'pendiente' => 'Pendiente',
+            //             'confirmado' => 'Confirmado',
+            //             'cancelado' => 'Cancelado',
+            //             'atendido' => 'Atendido',
+            //         ])
+            // ]);
     }
 }
