@@ -159,7 +159,6 @@ class ObraSocialResource extends Resource
         ];
     }
 
-    
 
     /**
      * Relation Manager Pacientes

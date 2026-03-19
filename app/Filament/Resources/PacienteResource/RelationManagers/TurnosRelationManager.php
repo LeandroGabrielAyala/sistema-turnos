@@ -9,9 +9,9 @@ use Filament\Tables\Actions\ViewAction;
 
 class TurnosRelationManager extends RelationManager
 {
-    protected static string $relationship = 'pacientes';
+    protected static string $relationship = 'turnos';
 
-    protected static ?string $title = 'Pacientes';
+    protected static ?string $title = 'turnos';
 
     public function table(Table $table): Table
     {
