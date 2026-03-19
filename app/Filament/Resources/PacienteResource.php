@@ -24,7 +24,9 @@ use Filament\Forms\Components\{
     Section,
     Select,
     Textarea,
-    Toggle
+    Toggle,
+    Tabs\Tab,
+    Tabs
 };
 
 /**
@@ -59,8 +61,6 @@ use Filament\Tables\Actions\{
 use Filament\Infolists\Components\{
     TextEntry,
     IconEntry,
-    Tabs,
-    Tabs\Tab
 };
 
 /**
