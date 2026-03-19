@@ -113,101 +113,41 @@
     });
 
 
-    // document.addEventListener('livewire:navigated', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
-    //     // FUNCIONA EN LOCAL :
-    //     // if (window.chatListenerLoaded) return;
-    //     // window.chatListenerLoaded = true;
+    if (!window.Echo) {
+        console.error('Echo no está disponible');
+        return;
+    }
 
-    //     Echo.private('chat.{{ $conversationId }}')
-    //         .listen('.MessageSent', (e) => {
+    Echo.private('chat.{{ $conversationId }}')
+        .listen('.MessageSent', (e) => {
 
-    //             console.log('Realtime recibido:', e);
+            console.log('Realtime recibido:', e);
 
-    //             if (e.sender_name !== "{{ auth()->user()->name }}") {
+            Livewire.dispatch('messageReceived', { event: e });
 
-    //                 fetch('/chat/unread-count')
-    //                     .then(res => res.text())
-    //                     .then(count => {
+        })
+        .listen('.UserTyping', (e) => {
 
-    //                         const badge = document.querySelector('.fi-sidebar-item-badge');
+            if (e.user === "{{ auth()->user()->name }}") return;
 
-    //                         if (!badge) return;
+            const typingBox = document.getElementById('typing-indicator');
 
-    //                         if (count > 0) {
-    //                             badge.innerText = count;
-    //                             badge.style.display = 'inline-flex';
-    //                         } else {
-    //                             badge.style.display = 'none';
-    //                         }
+            if (!typingBox) return;
 
-    //                     });
-    //                 }
+            typingBox.innerText = e.user + " está escribiendo...";
+            typingBox.style.display = "block";
+            setTimeout(() => {
+                typingBox.style.display = "none";
+            }, 1500);
 
-    //             Livewire.dispatch('messageReceived', { event: e });
+        });
 
-    //         })
+});
 
-    //         .listen('.UserTyping', (e) => {
 
-    //             if (e.user === "{{ auth()->user()->name }}") {
-    //                 return;
-    //             }
 
-    //             const typingBox = document.getElementById('typing-indicator');
 
-    //             if (!typingBox) return;
-
-    //             typingBox.innerText = e.user + " está escribiendo...";
-
-    //             typingBox.style.display = "block";
-
-    //             setTimeout(() => {
-    //                 typingBox.style.display = "none";
-    //             }, 1500);
-
-    //         })
-
-    // });
-
-    document.addEventListener('livewire:init', () => {
-
-        Echo.private('chat.{{ $conversationId }}')
-            .listen('.MessageSent', (e) => {
-
-                console.log('Realtime recibido:', e);
-
-                Livewire.dispatch('messageReceived', { event: e });
-
-            })
-
-            .listen('.UserTyping', (e) => {
-
-                if (e.user === "{{ auth()->user()->name }}") return;
-
-                const typingBox = document.getElementById('typing-indicator');
-
-                if (!typingBox) return;
-
-                typingBox.innerText = e.user + " está escribiendo...";
-                typingBox.style.display = "block";
-
-                setTimeout(() => {
-                    typingBox.style.display = "none";
-                }, 1500);
-
-            });
-
-    });
-
-    window.addEventListener('chat-message-received', () => {
-
-        const navigation = document.querySelector('[data-panel-id]');
-
-        if (!navigation) return;
-
-        Livewire.navigate(window.location.href);
-
-    });
 
 </script>

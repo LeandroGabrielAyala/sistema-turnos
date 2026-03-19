@@ -41,7 +41,7 @@ public function broadcastOn(): array
             'id' => $this->message->id,
             'message' => $this->message->message,
             'sender_id' => $this->message->sender_id,
-            'sender_name' => $this->message->sender->name,
+            'sender_name' => $this->message->sender?->name ?? 'Usuario',
             'conversation_id' => $this->message->conversation_id,
             'created_at' => $this->message->created_at->toDateTimeString(),
         ];
