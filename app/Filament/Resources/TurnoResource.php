@@ -114,6 +114,22 @@ class TurnoResource extends Resource
     }
 
     /**
+     * Badge con contador
+     */
+    public static function getNavigationBadge(): ?string
+    {
+        return Turno::count();
+    }
+
+    /**
+     * Color del badge (opcional)
+     */
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
+    }
+
+    /**
      * 📅 WIDGETS (Calendario)
      */
     public static function getWidgets(): array

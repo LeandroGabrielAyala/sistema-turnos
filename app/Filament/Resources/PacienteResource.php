@@ -108,7 +108,7 @@ class PacienteResource extends Resource
      */
     public static function getGloballySearchableAttributes(): array
     {
-        return ['nombre', 'apellido', 'dni', 'telefono'];
+        return ['nombre', 'apellido', 'dni', 'telefono', 'obraSocial.alias'];
     }
 
     public static function getGlobalSearchResultTitle(Model $record): string
@@ -121,17 +121,27 @@ class PacienteResource extends Resource
         return [
             'DNI' => $record->dni,
             'Teléfono' => $record->telefono,
+            'Obra Social' => $record->obraSocial?->alias ?? 'Sin obra social',
         ];
     }
 
-    /**
-     * Badge
-     */
 
+    /**
+     * Badge con contador
+     */
     public static function getNavigationBadge(): ?string
     {
         return Paciente::count();
     }
+
+    /**
+     * Color del badge (opcional)
+     */
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'primary';
+    }
+
 
     /**
      * 🧾 FORMULARIO (Crear / Editar)
