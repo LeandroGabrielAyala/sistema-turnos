@@ -101,7 +101,7 @@ class ObraSocialResource extends Resource
                  */
                 ViewAction::make()
                     ->label('Ver')
-                    ->modalHeading('Detalle de la obra social')
+                    ->modalHeading('Detalle de la Obra Social')
                     ->modalWidth('lg'),
 
                 /**
@@ -129,10 +129,12 @@ class ObraSocialResource extends Resource
         return $infolist
             ->schema([
                 TextEntry::make('alias')
-                    ->label('Alias'),
+                    ->label('Alias')
+                    ->columnSpanFull(),
 
                 TextEntry::make('nombre')
-                    ->label('Nombre completo'),
+                    ->label('Nombre completo')
+                    ->columnSpanFull(),
             ]);
     }
 
