@@ -21,17 +21,14 @@ class MessageSent implements ShouldBroadcast
         $this->message = $message;
     }
 
-    public function broadcastOn(): array
-    {
-        $receiverId = \App\Models\ChatMessage::where('conversation_id', $this->message->conversation_id)
-            ->where('sender_id', '!=', $this->message->sender_id)
-            ->value('sender_id');
 
-        return [
-            new PrivateChannel('chat.' . $this->message->conversation_id),
-            new PrivateChannel('user.' . $receiverId),
-        ];
-    }
+public function broadcastOn(): array
+{
+    return [
+        new PrivateChannel('chat.' . $this->message->conversation_id),
+    ];
+}
+
 
     public function broadcastAs(): string
     {
