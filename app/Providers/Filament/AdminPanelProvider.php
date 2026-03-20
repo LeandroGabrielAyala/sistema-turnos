@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -24,7 +26,6 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->footer(false)
             ->id('admin')
             ->path('admin')
             ->login()
@@ -40,6 +41,10 @@ class AdminPanelProvider extends PanelProvider
                 'Pacientes',
                 'Configuración',
             ])
+            ->renderHook(
+                PanelsRenderHook::FOOTER,
+                fn () => ''
+            )
             ->brandLogo(asset('images/logo-clinica.png'))
             ->brandName('Gestión de Clínica')
 	        ->brandLogoHeight('60px')
