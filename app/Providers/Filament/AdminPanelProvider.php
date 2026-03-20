@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset()
             ->emailVerification()
             ->spa()
+	->favicon(asset('images/logo-clinica.png'))
             ->colors([
                 'primary' => Color::Indigo,
             ])
