@@ -42,7 +42,12 @@ class EditUser extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->label('Eliminar'),
+                ->label('Eliminar')
+                ->modalHeading('Eliminar usuario')
+                ->modalDescription('¿Está seguro de eliminar este usuario?')
+                ->modalSubmitActionLabel('Sí, eliminar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Usuario eliminado correctamente'),
         ];
     }
 

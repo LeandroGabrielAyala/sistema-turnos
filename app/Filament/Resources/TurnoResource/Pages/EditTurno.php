@@ -42,7 +42,12 @@ class EditTurno extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->label('Eliminar'),
+                ->label('Eliminar')
+                ->modalHeading('Eliminar turno')
+                ->modalDescription('¿Está seguro de eliminar este turno?')
+                ->modalSubmitActionLabel('Sí, eliminar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Turno eliminado correctamente'),
         ];
     }
 

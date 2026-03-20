@@ -101,7 +101,7 @@ class PacienteResource extends Resource
      * Configuración del menú lateral
      */
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'Gestión Clínica';
+    protected static ?string $navigationGroup = 'Pacientes';
     protected static ?int $navigationSort = 1;
 
     /**

@@ -43,7 +43,12 @@ class EditPaciente extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->label('Eliminar'),
+                ->label('Eliminar')
+                ->modalHeading('Eliminar paciente')
+                ->modalDescription('¿Está seguro de eliminar este paciente?')
+                ->modalSubmitActionLabel('Sí, eliminar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Paciente eliminado correctamente'),
         ];
     }
 

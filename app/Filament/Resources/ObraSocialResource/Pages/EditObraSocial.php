@@ -42,7 +42,12 @@ class EditObraSocial extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->label('Eliminar'),
+                ->label('Eliminar')
+                ->modalHeading('Eliminar obra social')
+                ->modalDescription('¿Está seguro de eliminar esta obra social?')
+                ->modalSubmitActionLabel('Sí, eliminar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Obra social eliminada correctamente'),
         ];
     }
 
