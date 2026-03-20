@@ -7,6 +7,12 @@ use Filament\Pages\Auth\Login as BaseLogin;
 
 class Login extends BaseLogin
 {
+
+    protected function getFormSubheading(): ?string
+    {
+        return null;
+    }
+
     public function getTitle(): string
     {
         return 'Iniciar sesión';
