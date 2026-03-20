@@ -15,6 +15,11 @@ class StatsOverview extends BaseWidget
     {
         return [
 
+            Card::make('Turnos', Turno::count())
+                ->description('Total agendados')
+                ->descriptionIcon('heroicon-m-calendar-days')
+                ->color('warning'),
+
             Card::make('Pacientes', Paciente::count())
                 ->description('Total registrados')
                 ->descriptionIcon('heroicon-m-user-group')
@@ -24,11 +29,6 @@ class StatsOverview extends BaseWidget
                 ->description('Total cargadas')
                 ->descriptionIcon('heroicon-m-building-office')
                 ->color('success'),
-
-            Card::make('Turnos', Turno::count())
-                ->description('Total agendados')
-                ->descriptionIcon('heroicon-m-calendar-days')
-                ->color('warning'),
 
         ];
     }
