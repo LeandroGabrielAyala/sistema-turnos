@@ -53,7 +53,8 @@ use Filament\Tables\Actions\{
     ViewAction,
     EditAction,
     DeleteAction,
-    DeleteBulkAction
+    DeleteBulkAction,
+    ActionGroup
 };
 
 /**
@@ -374,101 +375,106 @@ class PacienteResource extends Resource
              * 🔹 ACCIONES POR FILA
              */
             ->actions([
-                /**
-                 * VER (Modal con Infolist)
-                 */
-                ViewAction::make()
-                    ->label('Ver')
-                    ->modalHeading(fn ($record) =>
-                        'Paciente: ' .
-                        $record->apellido . ' ' .
-                        $record->nombre .
-                        ' | DNI: ' .
-                        $record->dni
-                    )
-                    ->modalWidth('5xl')
-                    ->infolist([
-                        InfolistTabs::make('Paciente')
-                            ->tabs([
+                ActionGroup::make([
+                    /**
+                     * VER
+                     */
+                    ViewAction::make()
+                        ->label('Ver')
+                        ->modalHeading(fn ($record) =>
+                            'Paciente: ' .
+                            $record->apellido . ' ' .
+                            $record->nombre .
+                            ' | DNI: ' .
+                            $record->dni
+                        )
+                        ->modalWidth('5xl')
+                        ->infolist([
+                            InfolistTabs::make('Paciente')
+                                ->tabs([
 
-                                InfolistTab::make('Datos Personales')
-                                    ->icon('heroicon-o-user')
-                                    ->schema([
-                                        TextEntry::make('nombre_completo')
-                                            ->label('◾ PACIENTE:')
-                                            ->state(fn ($record) => "{$record->apellido}, {$record->nombre}"),
+                                    InfolistTab::make('Datos Personales')
+                                        ->icon('heroicon-o-user')
+                                        ->schema([
+                                            TextEntry::make('nombre_completo')
+                                                ->label('◾ PACIENTE:')
+                                                ->state(fn ($record) => "{$record->apellido}, {$record->nombre}"),
 
-                                        TextEntry::make('dni')->label('◾ DNI:'),
+                                            TextEntry::make('dni')->label('◾ DNI:'),
 
-                                        TextEntry::make('edad')
-                                            ->label('◾ EDAD:')
-                                            ->suffix(' años'),
+                                            TextEntry::make('edad')
+                                                ->label('◾ EDAD:')
+                                                ->suffix(' años'),
 
-                                        TextEntry::make('fecha_nacimiento')
-                                            ->label('◾ FECHA DE NACIMIENTO:')
-                                            ->date('d/m/Y'),
+                                            TextEntry::make('fecha_nacimiento')
+                                                ->label('◾ FECHA DE NACIMIENTO:')
+                                                ->date('d/m/Y'),
 
-                                        TextEntry::make('obraSocial.alias')
-                                            ->label('◾ OBRA SOCIAL:')
-                                            ->badge()
-                                            ->color('info'),
-                                    ])
-                                    ->columns(2),
+                                            TextEntry::make('obraSocial.alias')
+                                                ->label('◾ OBRA SOCIAL:')
+                                                ->badge()
+                                                ->color('info'),
+                                        ])
+                                        ->columns(2),
 
-                                InfolistTab::make('Información Social')
-                                    ->icon('heroicon-o-home')
-                                    ->schema([
-                                        TextEntry::make('estado_civil')->label('◾ ESTADO CIVIL:'),
-                                        TextEntry::make('ocupacion')->label('◾ OCUPACIÓN:'),
-                                        TextEntry::make('domicilio')->label('◾ DOMICILIO:'),
-                                        TextEntry::make('telefono')->label('◾ TELÉFONO:'),
-                                    ])
-                                    ->columns(2),
+                                    InfolistTab::make('Información Social')
+                                        ->icon('heroicon-o-home')
+                                        ->schema([
+                                            TextEntry::make('estado_civil')->label('◾ ESTADO CIVIL:'),
+                                            TextEntry::make('ocupacion')->label('◾ OCUPACIÓN:'),
+                                            TextEntry::make('domicilio')->label('◾ DOMICILIO:'),
+                                            TextEntry::make('telefono')->label('◾ TELÉFONO:'),
+                                        ])
+                                        ->columns(2),
 
-                                InfolistTab::make('Información Médica')
-                                    ->icon('heroicon-o-heart')
-                                    ->schema([
-                                        IconEntry::make('alergias')->label('◾ ALERGIA:')->boolean(),
-                                        IconEntry::make('cirugias')->label('◾ CIRUGÍA:')->boolean(),
+                                    InfolistTab::make('Información Médica')
+                                        ->icon('heroicon-o-heart')
+                                        ->schema([
+                                            IconEntry::make('alergias')->label('◾ ALERGIA:')->boolean(),
+                                            IconEntry::make('cirugias')->label('◾ CIRUGÍA:')->boolean(),
 
-                                        TextEntry::make('detalle_alergias')
-                                            ->visible(fn ($record) => $record->alergias)
-                                            ->label('◾ DETALLE ALERGIA:'),
+                                            TextEntry::make('detalle_alergias')
+                                                ->visible(fn ($record) => $record->alergias)
+                                                ->label('◾ DETALLE ALERGIA:'),
 
-                                        TextEntry::make('detalle_cirugias')
-                                            ->visible(fn ($record) => $record->cirugias)
-                                            ->label('◾ DETALLE CIRUGÍA:'),
+                                            TextEntry::make('detalle_cirugias')
+                                                ->visible(fn ($record) => $record->cirugias)
+                                                ->label('◾ DETALLE CIRUGÍA:'),
 
-                                        TextEntry::make('peso')
-                                            ->label('◾ PESO:')
-                                            ->suffix(' kg')
-                                            ->badge()
-                                            ->color('primary'),
+                                            TextEntry::make('peso')
+                                                ->label('◾ PESO:')
+                                                ->suffix(' kg')
+                                                ->badge()
+                                                ->color('primary'),
 
-                                        TextEntry::make('presion_arterial')
-                                            ->label('◾ PRESIÓN ARTERIAL:')
-                                            ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
-                                            ->badge()
-                                            ->color('primary'),
-                                    ])
-                                    ->columns(2),
-                            ]),
-                    ]),
+                                            TextEntry::make('presion_arterial')
+                                                ->label('◾ PRESIÓN ARTERIAL:')
+                                                ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
+                                                ->badge()
+                                                ->color('primary'),
+                                        ])
+                                        ->columns(2),
+                                ]),
+                        ]),
 
-                /**
-                 * EDITAR
-                 */
-                EditAction::make()
-                    ->label('Editar'),
+                    /**
+                     * EDITAR
+                     */
+                    EditAction::make()
+                        ->label('Editar'),
 
-                /**
-                 * ❌ ELIMINAR (NUEVO)
-                 */
-                DeleteAction::make()
-                    ->label('Eliminar')
-                    ->modalHeading('Eliminar paciente')
-                    ->modalDescription('¿Estás seguro de eliminar este paciente?')
-                    ->modalSubmitActionLabel('Sí, eliminar'),
+                    /**
+                     * ELIMINAR
+                     */
+                    DeleteAction::make()
+                        ->label('Eliminar')
+                        ->modalHeading('Eliminar paciente')
+                        ->modalDescription('¿Estás seguro de eliminar este paciente?')
+                        ->modalSubmitActionLabel('Sí, eliminar'),
+                ])
+                ->icon('heroicon-m-ellipsis-vertical') // ← los 3 puntitos
+                ->button()
+                ->label('')
             ])
 
             /**

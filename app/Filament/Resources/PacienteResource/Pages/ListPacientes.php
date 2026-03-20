@@ -39,23 +39,23 @@ class ListPacientes extends ListRecords
         return 'Lista';
     }
 
-    public function getTabs(): array
-    {
-        $tabs = [
-            'todas' => Tab::make('Todas')
-                ->badge($this->getModel()::count()),
-        ];
+    // public function getTabs(): array
+    // {
+    //     $tabs = [
+    //         'todas' => Tab::make('Todas')
+    //             ->badge($this->getModel()::count()),
+    //     ];
 
-        foreach (ObraSocial::all() as $obraSocial) {
-            $tabs[$obraSocial->id] = Tab::make($obraSocial->alias)
-                ->modifyQueryUsing(function (Builder $query) use ($obraSocial) {
-                    $query->where('obra_social_id', $obraSocial->id);
-                })
-                ->badge(
-                    $this->getModel()::where('obra_social_id', $obraSocial->id)->count()
-                );
-        }
+    //     foreach (ObraSocial::all() as $obraSocial) {
+    //         $tabs[$obraSocial->id] = Tab::make($obraSocial->alias)
+    //             ->modifyQueryUsing(function (Builder $query) use ($obraSocial) {
+    //                 $query->where('obra_social_id', $obraSocial->id);
+    //             })
+    //             ->badge(
+    //                 $this->getModel()::where('obra_social_id', $obraSocial->id)->count()
+    //             );
+    //     }
 
-        return $tabs;
-    }
+    //     return $tabs;
+    // }
 }
