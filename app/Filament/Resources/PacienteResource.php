@@ -473,7 +473,6 @@ class PacienteResource extends Resource
                         ->modalSubmitActionLabel('Sí, eliminar'),
                 ])
                 ->icon('heroicon-m-ellipsis-vertical') // ← los 3 puntitos
-                ->button()
                 ->label('')
             ])
 
