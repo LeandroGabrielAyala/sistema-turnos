@@ -49,7 +49,8 @@ class TurnosRelationManager extends RelationManager
                 ViewAction::make()
                     ->label('Ver')
                     ->modalHeading(fn ($record) =>
-                        'Turno del ' . $record->fecha . ' - ' . $record->hora
+                        'Turno del ' . \Carbon\Carbon::parse($record->fecha)->format('d/m/Y') 
+                        . ' - ' . $record->hora
                     )
                     ->modalWidth('lg')
                     ->infolist([
@@ -60,18 +61,18 @@ class TurnosRelationManager extends RelationManager
                                     ->icon('heroicon-o-calendar')
                                     ->schema([
                                         TextEntry::make('fecha')
-                                            ->label('📅 Fecha')
+                                            ->label('◾ Fecha')
                                             ->date('d/m/Y'),
 
                                         TextEntry::make('hora')
-                                            ->label('🕐 Hora'),
+                                            ->label('◾ Hora'),
 
                                         TextEntry::make('estado')
-                                            ->label('📌 Estado')
+                                            ->label('◾ Estado')
                                             ->badge(),
 
                                         TextEntry::make('paciente.nombre_completo')
-                                            ->label('👤 Paciente'),
+                                            ->label('◾ Paciente'),
                                     ])
                                     ->columns(2),
 

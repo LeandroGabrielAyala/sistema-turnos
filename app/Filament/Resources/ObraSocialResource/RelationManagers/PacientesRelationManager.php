@@ -20,9 +20,9 @@ class PacientesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('apellido')->label('Apellido'),
-                TextColumn::make('nombre')->label('Nombre'),
+                TextColumn::make('nombre_completo')->label('Paciente'),
                 TextColumn::make('dni')->label('DNI'),
+                TextColumn::make('telefono')->label('Teléfono'),
             ])
 
             ->actions([
@@ -39,10 +39,10 @@ class PacientesRelationManager extends RelationManager
                                 Tab::make('Datos')
                                     ->icon('heroicon-o-user')
                                     ->schema([
-                                        TextEntry::make('apellido')->label('Apellido'),
-                                        TextEntry::make('nombre')->label('Nombre'),
-                                        TextEntry::make('dni')->label('DNI'),
-                                        TextEntry::make('telefono')->label('Teléfono'),
+                                        TextEntry::make('apellido')->label('◾ Apellido'),
+                                        TextEntry::make('nombre')->label('◾ Nombre'),
+                                        TextEntry::make('dni')->label('◾ DNI'),
+                                        TextEntry::make('telefono')->label('◾ Teléfono'),
                                     ])
                                     ->columns(2),
 
