@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PacienteResource\Pages;
 use App\Filament\Resources\PacienteResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditPaciente extends EditRecord
 {
@@ -47,5 +48,17 @@ class EditPaciente extends EditRecord
     {
         return parent::getCancelFormAction()
             ->label('Cancelar');
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        if (!empty($data['presion_arterial']) && str_contains($data['presion_arterial'], '/')) {
+            [$sistolica, $diastolica] = explode('/', $data['presion_arterial']);
+
+            $data['presion_sistolica'] = $sistolica;
+            $data['presion_diastolica'] = $diastolica;
+        }
+
+        return $data;
     }
 }

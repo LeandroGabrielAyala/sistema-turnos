@@ -263,11 +263,11 @@ class PacienteResource extends Resource
                                 ->visible(fn ($get) => $get('cirugias')),
 
                             Textarea::make('enfermedades_hereditarias')
-                                ->label('Enfermedades hereditarias')
+                                ->label('Enfermedades Hereditarias')
                                 ->columnSpanFull(),
 
                             Textarea::make('medicacion_actual')
-                                ->label('Medicación actual')
+                                ->label('Medicación Actual')
                                 ->columnSpanFull(),
 
                             TextInput::make('peso')
@@ -335,13 +335,13 @@ class PacienteResource extends Resource
                     ->label('Peso')
                     ->suffix(' kg')
                     ->badge()
-                    ->color('primary'),
+                    ->color('primary')->columnSpan(1),
 
                 TextColumn::make('presion_arterial')
                     ->label('Presión arterial')
                     ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
                     ->badge()
-                    ->color('primary'),
+                    ->color('primary')->columnSpan(1),
             ])
 
             /**
@@ -399,10 +399,10 @@ class PacienteResource extends Resource
                     )
                     ->modalWidth('5xl')
                     ->infolist([
-                        Tabs::make('Paciente')
+                        InfolistTabs::make('Paciente')
                             ->tabs([
 
-                                Tab::make('Datos Personales')
+                                InfolistTab::make('Datos Personales')
                                     ->icon('heroicon-o-user')
                                     ->schema([
                                         TextEntry::make('nombre_completo')
@@ -426,7 +426,7 @@ class PacienteResource extends Resource
                                     ])
                                     ->columns(2),
 
-                                Tab::make('Información Social')
+                                InfolistTab::make('Información Social')
                                     ->icon('heroicon-o-home')
                                     ->schema([
                                         TextEntry::make('estado_civil')->label('◾ ESTADO CIVIL:'),
@@ -436,7 +436,7 @@ class PacienteResource extends Resource
                                     ])
                                     ->columns(2),
 
-                                Tab::make('Información Médica')
+                                InfolistTab::make('Información Médica')
                                     ->icon('heroicon-o-heart')
                                     ->schema([
                                         IconEntry::make('alergias')->label('◾ ALERGIA:')->boolean(),
