@@ -5,10 +5,19 @@ namespace App\Filament\Resources\ObraSocialResource\Pages;
 use App\Filament\Resources\ObraSocialResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 
 class EditObraSocial extends EditRecord
 {
     protected static string $resource = ObraSocialResource::class;
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Obra Social Editada')
+            ->body('La obra social fue actualizada exitosamente.')
+            ->success();
+    }
 
     public function getTitle(): string
     {

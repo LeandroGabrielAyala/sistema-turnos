@@ -4,11 +4,20 @@ namespace App\Filament\Resources\PacienteResource\Pages;
 
 use App\Filament\Resources\PacienteResource;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreatePaciente extends CreateRecord
 {
     protected static string $resource = PacienteResource::class;
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Paciente Creado')
+            ->body('El paciente fue registrado exitosamente.')
+            ->success();
+    }
 
     public function getTitle(): string
     {

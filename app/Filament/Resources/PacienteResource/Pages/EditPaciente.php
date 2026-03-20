@@ -5,11 +5,20 @@ namespace App\Filament\Resources\PacienteResource\Pages;
 use App\Filament\Resources\PacienteResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 
 class EditPaciente extends EditRecord
 {
     protected static string $resource = PacienteResource::class;
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Paciente Editado')
+            ->body('El paciente fue actualizado exitosamente.')
+            ->success();
+    }
 
     public function getTitle(): string
     {

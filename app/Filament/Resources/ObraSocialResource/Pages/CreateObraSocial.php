@@ -5,10 +5,19 @@ namespace App\Filament\Resources\ObraSocialResource\Pages;
 use App\Filament\Resources\ObraSocialResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Notifications\Notification;
 
 class CreateObraSocial extends CreateRecord
 {
     protected static string $resource = ObraSocialResource::class;
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->title('Obra Social Creada')
+            ->body('La obra social fue registrada exitosamente.')
+            ->success();
+    }
 
     public function getTitle(): string
     {

@@ -34,8 +34,8 @@ class ObraSocialResource extends Resource
      */
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
     protected static ?string $navigationGroup = 'Configuración';
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationLabel = 'Obras Sociales';
-    protected static ?int $navigationSort = 2;
 
     /**
      * Badge con contador
