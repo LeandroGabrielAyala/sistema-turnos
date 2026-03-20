@@ -37,4 +37,13 @@ class CreatePaciente extends CreateRecord
         return parent::getCancelFormAction()
             ->label('Cancelar');
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if (!empty($data['presion_sistolica']) && !empty($data['presion_diastolica'])) {
+            $data['presion_arterial'] = $data['presion_sistolica'] . '/' . $data['presion_diastolica'];
+        }
+
+        return $data;
+    }
 }

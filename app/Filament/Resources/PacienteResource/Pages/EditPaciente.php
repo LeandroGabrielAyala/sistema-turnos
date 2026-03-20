@@ -50,6 +50,15 @@ class EditPaciente extends EditRecord
             ->label('Cancelar');
     }
 
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (!empty($data['presion_sistolica']) && !empty($data['presion_diastolica'])) {
+            $data['presion_arterial'] = $data['presion_sistolica'] . '/' . $data['presion_diastolica'];
+        }
+
+        return $data;
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         if (!empty($data['presion_arterial']) && str_contains($data['presion_arterial'], '/')) {

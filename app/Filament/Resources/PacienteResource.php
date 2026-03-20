@@ -26,7 +26,8 @@ use Filament\Forms\Components\{
     Textarea,
     Toggle,
     Tabs\Tab,
-    Tabs
+    Tabs,
+    Hidden
 };
 
 /**
@@ -146,25 +147,6 @@ class PacienteResource extends Resource
         return 'primary';
     }
 
-    public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        if (!empty($data['presion_sistolica']) && !empty($data['presion_diastolica'])) {
-            $data['presion_arterial'] = $data['presion_sistolica'] . '/' . $data['presion_diastolica'];
-        }
-
-        return $data;
-    }
-
-    public static function mutateFormDataBeforeSave(array $data): array
-    {
-        if (!empty($data['presion_sistolica']) && !empty($data['presion_diastolica'])) {
-            $data['presion_arterial'] = $data['presion_sistolica'] . '/' . $data['presion_diastolica'];
-        }
-
-        return $data;
-    }
-
-
     /**
      * 🧾 FORMULARIO (Crear / Editar)
      */
@@ -273,17 +255,29 @@ class PacienteResource extends Resource
                             TextInput::make('peso')
                                 ->label('Peso')
                                 ->numeric()
-                                ->suffix('kg'),
+                                ->suffix('kg')->columnSpan(1),
 
                             TextInput::make('presion_sistolica')
                                 ->label('Sistólica')
                                 ->numeric()
-                                ->live(),
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    if ($state && $get('presion_diastolica')) {
+                                        $set('presion_arterial', $state . '/' . $get('presion_diastolica'));
+                                    }
+                                })->columnSpan(1),
 
                             TextInput::make('presion_diastolica')
                                 ->label('Diastólica')
                                 ->numeric()
-                                ->live(),
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    if ($state && $get('presion_sistolica')) {
+                                        $set('presion_arterial', $get('presion_sistolica') . '/' . $state);
+                                    }
+                                })->columnSpan(1),
+
+                            Hidden::make('presion_arterial'),
                         ])
                         ->columns(2),
                 ])
@@ -335,13 +329,13 @@ class PacienteResource extends Resource
                     ->label('Peso')
                     ->suffix(' kg')
                     ->badge()
-                    ->color('primary')->columnSpan(1),
+                    ->color('primary'),
 
                 TextColumn::make('presion_arterial')
                     ->label('Presión arterial')
                     ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
                     ->badge()
-                    ->color('primary')->columnSpan(1),
+                    ->color('primary'),
             ])
 
             /**
@@ -351,21 +345,15 @@ class PacienteResource extends Resource
                 SelectFilter::make('obra_social_id')
                     ->label('Obra Social')
                     ->relationship('obraSocial', 'alias'),
-
-                Filter::make('edad_mayor_que')
-                    ->label('Edad mínima')
+                    
+                Filter::make('apellido')
+                    ->label('Buscar por apellido')
                     ->form([
-                        TextInput::make('edad')
-                            ->numeric()
-                            ->label('Mayor o igual a'),
+                        TextInput::make('apellido'),
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if ($data['edad']) {
-                            $fecha = Carbon::now()
-                                ->subYears($data['edad'])
-                                ->format('Y-m-d');
-
-                            $query->where('fecha_nacimiento', '<=', $fecha);
+                        if ($data['apellido']) {
+                            $query->where('apellido', 'like', '%' . $data['apellido'] . '%');
                         }
                     }),
 
@@ -379,6 +367,7 @@ class PacienteResource extends Resource
                             $query->where('nombre', 'like', '%' . $data['nombre'] . '%');
                         }
                     }),
+
             ])
 
             /**
