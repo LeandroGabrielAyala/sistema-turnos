@@ -61,6 +61,9 @@ use Filament\Tables\Actions\{
 use Filament\Infolists\Components\{
     TextEntry,
     IconEntry,
+    Tabs as InfolistTabs,
+    Tabs\Tab as InfolistTab
+
 };
 
 /**
@@ -143,125 +146,150 @@ class PacienteResource extends Resource
         return 'primary';
     }
 
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        if (!empty($data['presion_sistolica']) && !empty($data['presion_diastolica'])) {
+            $data['presion_arterial'] = $data['presion_sistolica'] . '/' . $data['presion_diastolica'];
+        }
+
+        return $data;
+    }
+
+    public static function mutateFormDataBeforeSave(array $data): array
+    {
+        if (!empty($data['presion_sistolica']) && !empty($data['presion_diastolica'])) {
+            $data['presion_arterial'] = $data['presion_sistolica'] . '/' . $data['presion_diastolica'];
+        }
+
+        return $data;
+    }
+
 
     /**
      * 🧾 FORMULARIO (Crear / Editar)
      */
-public static function form(Form $form): Form
-{
-    return $form->schema([
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
 
-        Tabs::make('Paciente')
-            ->tabs([
+            Tabs::make('Paciente')
+                ->tabs([
 
-                /**
-                 * 🔹 TAB 1: DATOS PERSONALES
-                 */
-                Tab::make('Datos Personales')
-                    ->icon('heroicon-o-user')
-                    ->schema([
-                        TextInput::make('apellido')
-                            ->label('Apellido')
-                            ->required(),
+                    /**
+                     * 🔹 TAB 1: DATOS PERSONALES
+                     */
+                    Tab::make('Datos Personales')
+                        ->icon('heroicon-o-user')
+                        ->schema([
+                            TextInput::make('apellido')
+                                ->label('Apellido')
+                                ->required(),
 
-                        TextInput::make('nombre')
-                            ->label('Nombre')
-                            ->required(),
+                            TextInput::make('nombre')
+                                ->label('Nombre')
+                                ->required(),
 
-                        TextInput::make('dni')
-                            ->label('DNI')
-                            ->unique(ignoreRecord: true)
-                            ->required(),
+                            TextInput::make('dni')
+                                ->label('DNI')
+                                ->unique(ignoreRecord: true)
+                                ->required(),
 
-                        DatePicker::make('fecha_nacimiento')
-                            ->label('Fecha de nacimiento')
-                            ->required(),
+                            DatePicker::make('fecha_nacimiento')
+                                ->label('Fecha de nacimiento')
+                                ->required(),
 
-                        Select::make('obra_social_id')
-                            ->label('Obra Social')
-                            ->relationship('obraSocial', 'alias')
-                            ->getOptionLabelFromRecordUsing(fn ($record) =>
-                                "{$record->alias} - {$record->nombre}"
-                            )
-                            ->searchable()
-                            ->preload()
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(2),
+                            Select::make('obra_social_id')
+                                ->label('Obra Social')
+                                ->relationship('obraSocial', 'alias')
+                                ->getOptionLabelFromRecordUsing(fn ($record) =>
+                                    "{$record->alias} - {$record->nombre}"
+                                )
+                                ->searchable()
+                                ->preload()
+                                ->columnSpanFull(),
+                        ])
+                        ->columns(2),
 
-                /**
-                 * 🔹 TAB 2: INFORMACIÓN SOCIAL
-                 */
-                Tab::make('Información Social')
-                    ->icon('heroicon-o-home')
-                    ->schema([
-                        Select::make('estado_civil')
-                            ->label('Estado Civil')
-                            ->options([
-                                'soltero' => 'Soltero',
-                                'casado' => 'Casado',
-                                'divorciado' => 'Divorciado',
-                                'viudo' => 'Viudo',
-                            ]),
+                    /**
+                     * 🔹 TAB 2: INFORMACIÓN SOCIAL
+                     */
+                    Tab::make('Información Social')
+                        ->icon('heroicon-o-home')
+                        ->schema([
+                            Select::make('estado_civil')
+                                ->label('Estado Civil')
+                                ->options([
+                                    'soltero' => 'Soltero',
+                                    'casado' => 'Casado',
+                                    'divorciado' => 'Divorciado',
+                                    'viudo' => 'Viudo',
+                                ]),
 
-                        TextInput::make('ocupacion')
-                            ->label('Ocupación'),
+                            TextInput::make('ocupacion')
+                                ->label('Ocupación'),
 
-                        TextInput::make('domicilio')
-                            ->label('Domicilio')
-                            ->required(),
+                            TextInput::make('domicilio')
+                                ->label('Domicilio')
+                                ->required(),
 
-                        TextInput::make('telefono')
-                            ->numeric()
-                            ->label('Teléfono')
-                            ->required(),
-                    ])
-                    ->columns(2),
+                            TextInput::make('telefono')
+                                ->numeric()
+                                ->label('Teléfono')
+                                ->required(),
+                        ])
+                        ->columns(2),
 
-                /**
-                 * 🔹 TAB 3: INFORMACIÓN MÉDICA
-                 */
-                Tab::make('Información Médica')
-                    ->icon('heroicon-o-heart')
-                    ->schema([
+                    /**
+                     * 🔹 TAB 3: INFORMACIÓN MÉDICA
+                     */
+                    Tab::make('Información Médica')
+                        ->icon('heroicon-o-heart')
+                        ->schema([
 
-                        Toggle::make('alergias')
-                            ->label('¿Tiene alergias?')
-                            ->live(),
+                            Toggle::make('alergias')
+                                ->label('¿Tiene alergias?')
+                                ->live(),
 
-                        Textarea::make('detalle_alergias')
-                            ->label('Detalle de alergias')
-                            ->visible(fn ($get) => $get('alergias')),
+                            Textarea::make('detalle_alergias')
+                                ->label('Detalle de alergias')
+                                ->visible(fn ($get) => $get('alergias')),
 
-                        Toggle::make('cirugias')
-                            ->label('¿Tiene cirugías?')
-                            ->live(),
+                            Toggle::make('cirugias')
+                                ->label('¿Tiene cirugías?')
+                                ->live(),
 
-                        Textarea::make('detalle_cirugias')
-                            ->label('Detalle de cirugías')
-                            ->visible(fn ($get) => $get('cirugias')),
+                            Textarea::make('detalle_cirugias')
+                                ->label('Detalle de cirugías')
+                                ->visible(fn ($get) => $get('cirugias')),
 
-                        Textarea::make('enfermedades_hereditarias')
-                            ->label('Enfermedades hereditarias')
-                            ->columnSpanFull(),
+                            Textarea::make('enfermedades_hereditarias')
+                                ->label('Enfermedades hereditarias')
+                                ->columnSpanFull(),
 
-                        Textarea::make('medicacion_actual')
-                            ->label('Medicación actual')
-                            ->columnSpanFull(),
+                            Textarea::make('medicacion_actual')
+                                ->label('Medicación actual')
+                                ->columnSpanFull(),
 
-                        TextInput::make('peso')
-                            ->label('Peso')
-                            ->numeric()
-                            ->suffix('kg'),
+                            TextInput::make('peso')
+                                ->label('Peso')
+                                ->numeric()
+                                ->suffix('kg'),
 
-                        TextInput::make('presion_arterial')
-                            ->label('Presión Arterial'),
-                    ])
-                    ->columns(2),
-            ])
-            ->columnSpanFull(),
-    ]);
-}
+                            TextInput::make('presion_sistolica')
+                                ->label('Sistólica')
+                                ->numeric()
+                                ->live(),
+
+                            TextInput::make('presion_diastolica')
+                                ->label('Diastólica')
+                                ->numeric()
+                                ->live(),
+                        ])
+                        ->columns(2),
+                ])
+                ->columnSpanFull(),
+        ]);
+    }
 
     /**
      * 📊 TABLA DE REGISTROS
@@ -311,6 +339,7 @@ public static function form(Form $form): Form
 
                 TextColumn::make('presion_arterial')
                     ->label('Presión arterial')
+                    ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
                     ->badge()
                     ->color('primary'),
             ])
@@ -369,7 +398,73 @@ public static function form(Form $form): Form
                         $record->dni
                     )
                     ->modalWidth('5xl')
-                    ->infolist([/* (se mantiene tu infolist tal cual) */]),
+                    ->infolist([
+                        Tabs::make('Paciente')
+                            ->tabs([
+
+                                Tab::make('Datos Personales')
+                                    ->icon('heroicon-o-user')
+                                    ->schema([
+                                        TextEntry::make('nombre_completo')
+                                            ->label('◾ PACIENTE:')
+                                            ->state(fn ($record) => "{$record->apellido}, {$record->nombre}"),
+
+                                        TextEntry::make('dni')->label('◾ DNI:'),
+
+                                        TextEntry::make('edad')
+                                            ->label('◾ EDAD:')
+                                            ->suffix(' años'),
+
+                                        TextEntry::make('fecha_nacimiento')
+                                            ->label('◾ FECHA DE NACIMIENTO:')
+                                            ->date('d/m/Y'),
+
+                                        TextEntry::make('obraSocial.alias')
+                                            ->label('◾ OBRA SOCIAL:')
+                                            ->badge()
+                                            ->color('info'),
+                                    ])
+                                    ->columns(2),
+
+                                Tab::make('Información Social')
+                                    ->icon('heroicon-o-home')
+                                    ->schema([
+                                        TextEntry::make('estado_civil')->label('◾ ESTADO CIVIL:'),
+                                        TextEntry::make('ocupacion')->label('◾ OCUPACIÓN:'),
+                                        TextEntry::make('domicilio')->label('◾ DOMICILIO:'),
+                                        TextEntry::make('telefono')->label('◾ TELÉFONO:'),
+                                    ])
+                                    ->columns(2),
+
+                                Tab::make('Información Médica')
+                                    ->icon('heroicon-o-heart')
+                                    ->schema([
+                                        IconEntry::make('alergias')->label('◾ ALERGIA:')->boolean(),
+                                        IconEntry::make('cirugias')->label('◾ CIRUGÍA:')->boolean(),
+
+                                        TextEntry::make('detalle_alergias')
+                                            ->visible(fn ($record) => $record->alergias)
+                                            ->label('◾ DETALLE ALERGIA:'),
+
+                                        TextEntry::make('detalle_cirugias')
+                                            ->visible(fn ($record) => $record->cirugias)
+                                            ->label('◾ DETALLE CIRUGÍA:'),
+
+                                        TextEntry::make('peso')
+                                            ->label('◾ PESO:')
+                                            ->suffix(' kg')
+                                            ->badge()
+                                            ->color('primary'),
+
+                                        TextEntry::make('presion_arterial')
+                                            ->label('◾ PRESIÓN ARTERIAL:')
+                                            ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
+                                            ->badge()
+                                            ->color('primary'),
+                                    ])
+                                    ->columns(2),
+                            ]),
+                    ]),
 
                 /**
                  * EDITAR
