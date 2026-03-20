@@ -286,7 +286,9 @@ class PacienteResource extends Resource
                                 ->label('Recetas médicas')
                                 ->image()
                                 ->multiple()
+                                ->disk('public') // 🔥 OBLIGATORIO
                                 ->directory('recetas')
+                                ->visibility('public') // 🔥 IMPORTANTE
                                 ->imagePreviewHeight('150')
                                 ->columnSpanFull(),
                         ])
