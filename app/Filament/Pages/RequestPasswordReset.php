@@ -6,7 +6,9 @@ use Filament\Pages\Page;
 
 class RequestPasswordReset extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+  protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static string $view = 'filament.pages.request-password-reset';
+  protected static string $view = 'filament.pages.request-password-reset';
+
+protected static bool $shouldRegisterNavigation = false;
 }

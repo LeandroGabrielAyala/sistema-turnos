@@ -35,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandLogo(asset('images/logo-clinica.png'))
             ->brandName('Gestión de Clínica')
+	    ->brandLogoHeight('60px')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([

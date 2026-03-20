@@ -10,8 +10,9 @@ class Login extends BaseLogin
 
     protected function getFormSubheading(): ?string
     {
-        return null;
+        return '';
     }
+
 
     public function getTitle(): string
     {
@@ -21,11 +22,6 @@ class Login extends BaseLogin
     public function getHeading(): string
     {
         return 'Sistema de Gestión de Clínica';
-    }
-
-    public function getSubheading(): ?string
-    {
-        return 'Ingrese sus credenciales para acceder';
     }
 
     protected function getEmailFormComponent(): TextInput
