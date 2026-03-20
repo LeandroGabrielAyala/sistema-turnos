@@ -11,14 +11,6 @@ class EditObraSocial extends EditRecord
 {
     protected static string $resource = ObraSocialResource::class;
 
-    protected function getCreatedNotification(): ?Notification
-    {
-        return Notification::make()
-            ->title('Obra Social Editada')
-            ->body('La obra social fue actualizada exitosamente.')
-            ->success();
-    }
-
     public function getTitle(): string
     {
         return "Editar Obra Social: {$this->record->alias} - {$this->record->nombre}";
@@ -48,6 +40,14 @@ class EditObraSocial extends EditRecord
                 ->modalSubmitActionLabel('Sí, eliminar')
                 ->modalCancelActionLabel('Cancelar')
                 ->successNotificationTitle('Obra social eliminada correctamente'),
+                
+            Actions\EditAction::make()
+                ->label('Editar')
+                ->modalHeading('Editar obra social')
+                ->modalDescription('¿Está seguro de editar esta obra social?')
+                ->modalSubmitActionLabel('Sí, editar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Obra social actualizada correctamente'),
         ];
     }
 

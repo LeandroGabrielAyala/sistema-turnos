@@ -11,14 +11,6 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
-    protected function getCreatedNotification(): ?Notification
-    {
-        return Notification::make()
-            ->title('Usuario Editado')
-            ->body('El usuario fue actualizado exitosamente.')
-            ->success();
-    }
-
     public function getTitle(): string
     {
         return "Editar Usuario: {$this->record->name}";
@@ -48,6 +40,13 @@ class EditUser extends EditRecord
                 ->modalSubmitActionLabel('Sí, eliminar')
                 ->modalCancelActionLabel('Cancelar')
                 ->successNotificationTitle('Usuario eliminado correctamente'),
+            Actions\EditAction::make()
+                ->label('Editar')
+                ->modalHeading('Editar usuario')
+                ->modalDescription('¿Está seguro de editar este usuario?')
+                ->modalSubmitActionLabel('Sí, editar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Usuario actualizado correctamente'),
         ];
     }
 

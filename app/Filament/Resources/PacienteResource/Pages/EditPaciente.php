@@ -12,14 +12,6 @@ class EditPaciente extends EditRecord
 {
     protected static string $resource = PacienteResource::class;
 
-    protected function getCreatedNotification(): ?Notification
-    {
-        return Notification::make()
-            ->title('Paciente Editado')
-            ->body('El paciente fue actualizado exitosamente.')
-            ->success();
-    }
-
     public function getTitle(): string
     {
         return "Editar Paciente: {$this->record->apellido}, {$this->record->nombre}";
@@ -49,6 +41,14 @@ class EditPaciente extends EditRecord
                 ->modalSubmitActionLabel('Sí, eliminar')
                 ->modalCancelActionLabel('Cancelar')
                 ->successNotificationTitle('Paciente eliminado correctamente'),
+                
+            Actions\EditAction::make()
+                ->label('Editar')
+                ->modalHeading('Editar paciente')
+                ->modalDescription('¿Está seguro de editar este paciente?')
+                ->modalSubmitActionLabel('Sí, editar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Paciente actualizado correctamente'),
         ];
     }
 

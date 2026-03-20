@@ -11,14 +11,6 @@ class EditTurno extends EditRecord
 {
     protected static string $resource = TurnoResource::class;
 
-    protected function getCreatedNotification(): ?Notification
-    {
-        return Notification::make()
-            ->title('Turno Editado')
-            ->body('El turno fue actualizado exitosamente.')
-            ->success();
-    }
-
     public function getTitle(): string
     {
         return "Editar Turno: {$this->record->paciente->apellido}, {$this->record->paciente->nombre}";
@@ -48,6 +40,14 @@ class EditTurno extends EditRecord
                 ->modalSubmitActionLabel('Sí, eliminar')
                 ->modalCancelActionLabel('Cancelar')
                 ->successNotificationTitle('Turno eliminado correctamente'),
+
+            Actions\EditAction::make()
+                ->label('Editar')
+                ->modalHeading('Editar turno')
+                ->modalDescription('¿Está seguro de editar este turno?')
+                ->modalSubmitActionLabel('Sí, editar')
+                ->modalCancelActionLabel('Cancelar')
+                ->successNotificationTitle('Turno actualizado correctamente'),
         ];
     }
 
