@@ -7,6 +7,10 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\Tabs;
+use Filament\Infolists\Components\Tabs\Tab;
 
 class TurnosRelationManager extends RelationManager
 {
@@ -42,16 +46,37 @@ class TurnosRelationManager extends RelationManager
             ])
 
             ->actions([
-                ViewAction::make()->label('Ver'),
+                ViewAction::make()
+                    ->label('Ver')
+                    ->modalHeading(fn ($record) =>
+                        'Turno del ' . $record->fecha . ' - ' . $record->hora
+                    )
+                    ->modalWidth('lg')
+                    ->infolist([
+                        Tabs::make('Turno')
+                            ->tabs([
+
+                                Tab::make('Información')
+                                    ->icon('heroicon-o-calendar')
+                                    ->schema([
+                                        TextEntry::make('fecha')
+                                            ->label('📅 Fecha')
+                                            ->date('d/m/Y'),
+
+                                        TextEntry::make('hora')
+                                            ->label('🕐 Hora'),
+
+                                        TextEntry::make('estado')
+                                            ->label('📌 Estado')
+                                            ->badge(),
+
+                                        TextEntry::make('paciente.nombre_completo')
+                                            ->label('👤 Paciente'),
+                                    ])
+                                    ->columns(2),
+
+                            ]),
+                    ]),
             ]);
-            // ->filters([
-            //     SelectFilter::make('estado')
-            //         ->options([
-            //             'pendiente' => 'Pendiente',
-            //             'confirmado' => 'Confirmado',
-            //             'cancelado' => 'Cancelado',
-            //             'atendido' => 'Atendido',
-            //         ])
-            // ]);
     }
 }
