@@ -290,6 +290,7 @@ class PacienteResource extends Resource
                                 ->directory('recetas')
                                 ->visibility('public') // 🔥 IMPORTANTE
                                 ->imagePreviewHeight('150')
+                                ->maxSize(2048)
                                 ->columnSpanFull(),
                         ])
                         ->columns(2),
