@@ -27,7 +27,8 @@ use Filament\Forms\Components\{
     Toggle,
     Tabs\Tab,
     Tabs,
-    Hidden
+    Hidden,
+    FileUpload
 };
 
 /**
@@ -64,7 +65,8 @@ use Filament\Infolists\Components\{
     TextEntry,
     IconEntry,
     Tabs as InfolistTabs,
-    Tabs\Tab as InfolistTab
+    Tabs\Tab as InfolistTab,
+    ImageEntry
 
 };
 
@@ -279,6 +281,14 @@ class PacienteResource extends Resource
                                 })->columnSpan(1),
 
                             Hidden::make('presion_arterial'),
+
+                            FileUpload::make('recetas')
+                                ->label('Recetas médicas')
+                                ->image()
+                                ->multiple()
+                                ->directory('recetas')
+                                ->imagePreviewHeight('150')
+                                ->columnSpanFull(),
                         ])
                         ->columns(2),
                 ])
@@ -452,6 +462,11 @@ class PacienteResource extends Resource
                                                 ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
                                                 ->badge()
                                                 ->color('primary'),
+
+                                            ImageEntry::make('recetas')
+                                                ->label('Recetas')
+                                                ->stacked()
+                                                ->height(100),
                                         ])
                                         ->columns(2),
                                 ]),

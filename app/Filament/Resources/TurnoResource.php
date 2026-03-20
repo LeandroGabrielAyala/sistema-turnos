@@ -28,7 +28,8 @@ use Filament\Forms\Components\{
  */
 use Filament\Tables\Columns\{
     TextColumn,
-    BadgeColumn
+    BadgeColumn,
+    SelectColumn
 };
 
 /**
@@ -56,7 +57,8 @@ use Filament\Infolists\Components\{
     TextEntry,
     IconEntry,
     Tabs,
-    Tabs\Tab
+    Tabs\Tab,
+    ImageEntry
 };
 
 class TurnoResource extends Resource
@@ -163,6 +165,25 @@ class TurnoResource extends Resource
                 ->required(),
 
             /**
+             * Estado del turno
+             */
+            Select::make('estado')
+                ->options([
+                    'confirmado' => 'Confirmado',
+                    'cancelado' => 'Cancelado',
+                    'atendido' => 'Atendido',
+                ])
+                ->default('confirmado')
+                ->live(),
+
+            /**
+             * Motivo de la Consulta
+             */
+            Textarea::make('motivo_consulta')
+                ->label('Motivo de consulta')
+                ->columnSpanFull(),
+
+            /**
              * Fecha del turno
              */
             DatePicker::make('fecha')
@@ -179,24 +200,26 @@ class TurnoResource extends Resource
                 ->required(),
 
             /**
-             * Estado del turno
+             * Observación del médico
              */
-            Select::make('estado')
-                ->label('Estado')
-                ->options([
-                    'pendiente' => 'Pendiente',
-                    'confirmado' => 'Confirmado',
-                    'cancelado' => 'Cancelado',
-                    'atendido' => 'Atendido',
-                ])
-                ->default('pendiente')
-                ->required(),
+            Textarea::make('observacion_medica')
+                ->label('Observación del médico')
+                ->visible(fn ($get) => $get('estado') === 'atendido')
+                ->columnSpanFull(),
 
             /**
-             * Observaciones
+             * Estudios solicitados
              */
-            Textarea::make('observaciones')
-                ->label('Observaciones')
+            Select::make('estudios')
+                ->label('Estudios solicitados')
+                ->multiple()
+                ->options([
+                    'radiografia' => 'Radiografía',
+                    'analisis_sangre' => 'Análisis de sangre',
+                    'ecografia' => 'Ecografía',
+                    'resonancia' => 'Resonancia',
+                ])
+                ->visible(fn ($get) => $get('estado') === 'atendido')
                 ->columnSpanFull(),
         ]);
     }
@@ -239,14 +262,22 @@ class TurnoResource extends Resource
                             );
                     }),
 
-                BadgeColumn::make('estado')
-                    ->label('Estado')
-                    ->colors([
-                        'warning' => 'pendiente',
-                        'success' => 'confirmado',
-                        'danger' => 'cancelado',
-                        'primary' => 'atendido',
-                    ]),
+                SelectColumn::make('estado')
+                    ->options([
+                        'confirmado' => 'Confirmado',
+                        'cancelado' => 'Cancelado',
+                        'atendido' => 'Atendido',
+                    ])
+                    ->afterStateUpdated(function ($record, $state) {
+
+                        if ($state === 'atendido') {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Completar atención')
+                                ->body('Debe completar la observación médica')
+                                ->warning()
+                                ->send();
+                        }
+                    }),
             ])
 
             /**
@@ -327,9 +358,17 @@ class TurnoResource extends Resource
                                     TextEntry::make('estado')
                                         ->label('Estado'),
 
-                                    TextEntry::make('observaciones')
-                                        ->label('Observaciones')
-                                        ->columnSpanFull(),
+                                    TextEntry::make('motivo_consulta')
+                                        ->label('Motivo'),
+
+                                    TextEntry::make('observacion_medica')
+                                        ->label('Observación del médico')
+                                        ->visible(fn ($record) => $record->estado === 'atendido'),
+
+                                    TextEntry::make('estudios')
+                                        ->label('Estudios')
+                                        ->formatStateUsing(fn ($state) => $state ? implode(', ', $state) : '-'),
+
                                 ])
                                 ->columns(2),
 
@@ -341,6 +380,11 @@ class TurnoResource extends Resource
 
                                     TextEntry::make('paciente.obraSocial.alias')
                                         ->label('Obra Social'),
+
+                                    ImageEntry::make('paciente.recetas')
+                                        ->label('Recetas del paciente')
+                                        ->stacked()
+                                        ->height(80),
                                 ])
                                 ->columns(2),
 

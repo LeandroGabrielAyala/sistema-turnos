@@ -27,6 +27,10 @@ class Paciente extends Model
         'presion_arterial',
     ];
 
+    protected $casts = [
+        'recetas' => 'array',
+    ];
+
     public function obraSocial()
     {
         return $this->belongsTo(ObraSocial::class);

@@ -16,6 +16,7 @@ class Turno extends Model
 
     protected $casts = [
         'fecha' => 'date',
+        'estudios' => 'array',
     ];
 
     public function paciente()
