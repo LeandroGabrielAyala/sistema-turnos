@@ -27,10 +27,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
+            ->emailVerification()
+            ->spa()
             ->colors([
                 'primary' => Color::Indigo,
             ])
-            ->brandName('Sistema de Gestión de Clínica')
+            ->brandName('Gestión de Clínica')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
