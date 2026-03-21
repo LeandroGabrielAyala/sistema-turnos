@@ -414,6 +414,7 @@ class TurnoResource extends Resource
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
                                             ->badge()
+                                            ->placeholder('Sin estudios solicitados')
                                             ->separator(','),
 
                                     ])
