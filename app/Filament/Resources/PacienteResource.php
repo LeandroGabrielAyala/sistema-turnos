@@ -67,7 +67,8 @@ use Filament\Infolists\Components\{
     Tabs as InfolistTabs,
     Tabs\Tab as InfolistTab,
     RepeatableEntry,
-    ImageEntry
+    ImageEntry,
+    ViewEntry
 
 };
 
@@ -468,15 +469,9 @@ class PacienteResource extends Resource
                                                 ->badge()
                                                 ->color('primary'),
 
-RepeatableEntry::make('recetas')
-    ->label('Recetas')
-    ->schema([
-        ImageEntry::make('receta')
-            ->state(fn ($record) => $record) // 🔥 clave
-            ->disk('public')
-            ->height(100),
-    ])
-    ->columns(3),
+                                            ViewEntry::make('recetas')
+                                                ->label('Recetas')
+                                                ->view('filament.components.recetas-preview'),
                                         ])
                                         ->columns(2),
                                 ]),
