@@ -415,24 +415,25 @@ TextEntry::make('estudios')
 
         $map = Turno::ESTUDIOS;
 
-        // 🔥 Caso 1: viene como JSON string
-        if (is_string($state) && str_starts_with($state, '[')) {
-            $state = json_decode($state, true);
-        }
-
-        // 🔥 Caso 2: viene como string simple
+        // 🔥 Normalizar a array SIEMPRE
         if (is_string($state)) {
-            return $map[$state] ?? $state;
+            $decoded = json_decode($state, true);
+            $state = is_array($decoded) ? $decoded : [$state];
         }
 
-        // 🔥 Caso 3: array correcto
-        if (is_array($state)) {
-            return collect($state)
-                ->map(fn ($item) => $map[$item] ?? $item)
-                ->implode(', ');
+        if (!is_array($state)) {
+            return '-';
         }
 
-        return '-';
+        return collect($state)
+            ->map(function ($item) use ($map) {
+
+                // 🔥 NORMALIZAR CLAVE
+                $key = trim(strtolower($item));
+
+                return $map[$key] ?? $item;
+            })
+            ->implode(', ');
     }),
 
                                     ])
