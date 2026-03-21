@@ -30,6 +30,11 @@ class CreateTurno extends CreateRecord
 
         return $data;
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
     
     public function getTitle(): string
     {

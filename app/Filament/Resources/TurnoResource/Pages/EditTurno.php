@@ -16,6 +16,11 @@ class EditTurno extends EditRecord
         return "Editar Turno: {$this->record->paciente->apellido}, {$this->record->paciente->nombre}";
     }
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
     public function getBreadcrumb(): string
     {
         return 'Editar';

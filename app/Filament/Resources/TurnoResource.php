@@ -29,7 +29,8 @@ use Filament\Forms\Components\{
 use Filament\Tables\Columns\{
     TextColumn,
     BadgeColumn,
-    SelectColumn
+    SelectColumn,
+    ViewColumn
 };
 
 /**
@@ -215,12 +216,7 @@ class TurnoResource extends Resource
             Select::make('estudios')
                 ->label('Estudios solicitados')
                 ->multiple()
-                ->options([
-                    'radiografia' => 'Radiografía',
-                    'analisis_sangre' => 'Análisis de sangre',
-                    'ecografia' => 'Ecografía',
-                    'resonancia' => 'Resonancia',
-                ])
+                ->options(Turno::ESTUDIOS)
                 ->visible(fn ($get) => $get('estado') === 'atendido')
                 ->columnSpanFull(),
         ]);
@@ -264,18 +260,10 @@ class TurnoResource extends Resource
                             );
                     }),
 
-                BadgeColumn::make('estado')
+
+                ViewColumn::make('estado')
                     ->label('Estado')
-                    ->colors([
-                        'info' => 'confirmado',
-                        'danger' => 'cancelado',
-                        'success' => 'atendido',
-                    ])
-                    ->icons([
-                        'heroicon-o-clock' => 'confirmado',
-                        'heroicon-o-x-circle' => 'cancelado',
-                        'heroicon-o-check-circle' => 'atendido',
-                    ]),
+                    ->view('filament.components.estado-dropdown'),
             ])
 
             /**
@@ -346,25 +334,7 @@ class TurnoResource extends Resource
                         Select::make('estudios')
                             ->label('Estudios a realizar:')
                             ->multiple()
-                            ->options([
-                                'radiografia' => 'Radiografía',
-                                'analisis_sangre' => 'Análisis de sangre',
-                                'analisis_orina' => 'Análisis de orina',
-                                'ecografia' => 'Ecografía',
-                                'resonancia' => 'Resonancia magnética',
-                                'tomografia' => 'Tomografía computada',
-                                'electrocardiograma' => 'Electrocardiograma (ECG)',
-                                'ergometria' => 'Ergometría (prueba de esfuerzo)',
-                                'holter' => 'Holter cardíaco',
-                                'endoscopia' => 'Endoscopía',
-                                'colonoscopia' => 'Colonoscopía',
-                                'mamografia' => 'Mamografía',
-                                'densitometria_osea' => 'Densitometría ósea',
-                                'prueba_covid' => 'Test COVID-19',
-                                'perfil_lipidico' => 'Perfil lipídico',
-                                'glucemia' => 'Glucemia',
-                                'hemograma' => 'Hemograma completo',
-                            ])
+                            ->options(Turno::ESTUDIOS)
                             ->columnSpanFull(),
                     ])
                     ->action(function ($record, $data) {
@@ -377,6 +347,19 @@ class TurnoResource extends Resource
 
                         \Filament\Notifications\Notification::make()
                             ->title('Turno Atendido Correctamente')
+                            ->success()
+                            ->send();
+                    }),
+
+                Action::make('cambiarEstado')
+                    ->action(function ($record, $arguments) {
+
+                        $record->update([
+                            'estado' => $arguments,
+                        ]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Estado actualizado')
                             ->success()
                             ->send();
                     }),
@@ -436,25 +419,7 @@ class TurnoResource extends Resource
                                             ->visible(fn ($record) => $record->estado === 'atendido')
                                             ->formatStateUsing(function ($state) {
 
-                                                $map = [
-                                                    'radiografia' => 'Radiografía',
-                                                    'analisis_sangre' => 'Análisis de sangre',
-                                                    'analisis_orina' => 'Análisis de orina',
-                                                    'ecografia' => 'Ecografía',
-                                                    'resonancia' => 'Resonancia magnética',
-                                                    'tomografia' => 'Tomografía computada',
-                                                    'electrocardiograma' => 'Electrocardiograma (ECG)',
-                                                    'ergometria' => 'Ergometría (prueba de esfuerzo)',
-                                                    'holter' => 'Holter cardíaco',
-                                                    'endoscopia' => 'Endoscopía',
-                                                    'colonoscopia' => 'Colonoscopía',
-                                                    'mamografia' => 'Mamografía',
-                                                    'densitometria_osea' => 'Densitometría ósea',
-                                                    'prueba_covid' => 'Test COVID-19',
-                                                    'perfil_lipidico' => 'Perfil lipídico',
-                                                    'glucemia' => 'Glucemia',
-                                                    'hemograma' => 'Hemograma completo',
-                                                ];
+                                                $map = Turno::ESTUDIOS;
 
                                                 if (is_array($state)) {
                                                     return collect($state)
@@ -529,6 +494,14 @@ class TurnoResource extends Resource
              */
             ->defaultSort('fecha', 'desc');
     }
+
+        /**
+         * REDIRECCIONAR A LIST
+         */
+        public static function getRedirectUrl(): string
+        {
+            return static::getUrl('index');
+        }
 
     /**
      * 🔗 RELACIONES (si hay RelationManagers)
