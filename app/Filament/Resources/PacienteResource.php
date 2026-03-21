@@ -468,12 +468,15 @@ class PacienteResource extends Resource
                                                 ->badge()
                                                 ->color('primary'),
 
-                                            ImageEntry::make('paciente.recetas')
-                                                ->label('Recetas del paciente')
-                                                ->stacked()
-                                                ->height(80)
-                                                ->disk('public') // 🔥 IMPORTANTE
-                                                ->multiple(),
+                                            RepeatableEntry::make('recetas')
+                                                ->label('Recetas')
+                                                ->schema([
+                                                    ImageEntry::make('receta')
+                                                        ->getStateUsing(fn ($state) => $state) // 🔥 clave
+                                                        ->disk('public')
+                                                        ->height(100),
+                                                ])
+                                                ->columnSpanFull(),
                                         ])
                                         ->columns(2),
                                 ]),
