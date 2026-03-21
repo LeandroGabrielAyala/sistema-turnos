@@ -60,6 +60,7 @@ class TurnosRelationManager extends RelationManager
                                 Tab::make('Información')
                                     ->icon('heroicon-o-calendar')
                                     ->schema([
+
                                         TextEntry::make('fecha')
                                             ->label('◾ Fecha')
                                             ->date('d/m/Y'),
@@ -69,10 +70,38 @@ class TurnosRelationManager extends RelationManager
 
                                         TextEntry::make('estado')
                                             ->label('◾ Estado')
-                                            ->badge(),
+                                            ->badge()
+                                            ->color(fn ($state) => match ($state) {
+                                                'confirmado' => 'success',
+                                                'cancelado' => 'danger',
+                                                'atendido' => 'primary',
+                                                default => 'gray',
+                                            }),
 
                                         TextEntry::make('paciente.nombre_completo')
                                             ->label('◾ Paciente'),
+
+                                        // 🔥 NUEVO
+                                        TextEntry::make('motivo_consulta')
+                                            ->label('◾ Motivo del turno')
+                                            ->columnSpanFull(),
+
+                                        // 🔥 SOLO SI FUE ATENDIDO
+                                        TextEntry::make('observacion_medica')
+                                            ->label('◾ Observación médica')
+                                            ->visible(fn ($record) => $record->estado === 'atendido')
+                                            ->columnSpanFull(),
+
+                                        // 🔥 ESTUDIOS (PRO)
+                                        TextEntry::make('estudios_formateados')
+                                            ->label('◾ Estudios')
+                                            ->visible(fn ($record) => $record->estado === 'atendido')
+                                            ->badge()
+                                            ->separator(',')
+                                            ->formatStateUsing(function ($state) {
+                                                return $state ?: 'Sin estudios recomendados';
+                                            }),
+
                                     ])
                                     ->columns(2),
 

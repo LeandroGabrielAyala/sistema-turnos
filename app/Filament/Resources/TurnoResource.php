@@ -412,7 +412,15 @@ class TurnoResource extends Resource
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
                                             ->badge()
-                                            ->separator(','),
+                                            ->separator(',')
+                                            ->formatStateUsing(function ($state) {
+
+                                                if (empty($state)) {
+                                                    return 'Sin estudios recomendados';
+                                                }
+
+                                                return $state;
+                                            }),
 
                                     ])
                                     ->columns(2),
