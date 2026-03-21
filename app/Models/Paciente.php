@@ -25,6 +25,7 @@ class Paciente extends Model
         'detalle_cirugias',
         'peso',
         'presion_arterial',
+        'recetas'
     ];
 
     protected $casts = [
