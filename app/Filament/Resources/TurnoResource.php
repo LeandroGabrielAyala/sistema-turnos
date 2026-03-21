@@ -29,8 +29,7 @@ use Filament\Forms\Components\{
 use Filament\Tables\Columns\{
     TextColumn,
     BadgeColumn,
-    SelectColumn,
-    ViewColumn
+    SelectColumn
 };
 
 /**
@@ -228,7 +227,6 @@ class TurnoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordUrl(null)
             ->searchable()
 
             /**
@@ -261,10 +259,18 @@ class TurnoResource extends Resource
                             );
                     }),
 
-
-                ViewColumn::make('estado')
+                BadgeColumn::make('estado')
                     ->label('Estado')
-                    ->view('filament.components.estado-dropdown'),
+                    ->colors([
+                        'info' => 'confirmado',
+                        'danger' => 'cancelado',
+                        'success' => 'atendido',
+                    ])
+                    ->icons([
+                        'heroicon-o-clock' => 'confirmado',
+                        'heroicon-o-x-circle' => 'cancelado',
+                        'heroicon-o-check-circle' => 'atendido',
+                    ]),
             ])
 
             /**
@@ -319,40 +325,39 @@ class TurnoResource extends Resource
                  */
 
                 Action::make('atender')
-                        ->label('Atender')
-                        ->modalHeading(fn ($record) => 
-                            'ATENDIDO - Completar el Turno de ' . $record->paciente->nombre_completo
-                        )
-                        ->icon('heroicon-o-check')
-                        ->color('success')
-                        ->visible(fn ($record) => $record->estado === 'confirmado')
-                        ->form([
-                            Textarea::make('observacion_medica')
-                                ->label('Observación del Médico:')
-                                ->required()
-                                ->columnSpanFull(),
+                    ->label('Atender')
+                    ->modalHeading(fn ($record) => 
+                        'ATENDIDO - Completar el Turno de ' . $record->paciente->nombre_completo
+                    )
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->estado === 'confirmado')
+                    ->form([
+                        Textarea::make('observacion_medica')
+                            ->label('Observación del Médico:')
+                            ->required()
+                            ->columnSpanFull(),
 
-                            Select::make('estudios')
-                                ->label('Estudios a realizar:')
-                                ->multiple()
-                                ->options(Turno::ESTUDIOS)
-                                ->columnSpanFull(),
-                        ])
-                        ->action(function ($record, $arguments) {
+                        Select::make('estudios')
+                            ->label('Estudios a realizar:')
+                            ->multiple()
+                            ->options(Turno::ESTUDIOS)
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function ($record, $data) {
 
-                            $estado = $arguments['estado'] ?? null;
+                        $record->update([
+                            'estado' => 'atendido',
+                            'observacion_medica' => $data['observacion_medica'],
+                            'estudios' => $data['estudios'],
+                        ]);
 
-                            if (!$estado) return;
+                        \Filament\Notifications\Notification::make()
+                            ->title('Turno Atendido Correctamente')
+                            ->success()
+                            ->send();
+                    }),
 
-                            $record->update([
-                                'estado' => $estado,
-                            ]);
-
-                            \Filament\Notifications\Notification::make()
-                                ->title('Estado actualizado')
-                                ->success()
-                                ->send();
-                        }),
                 /**
                  * 👁 VER
                  */
