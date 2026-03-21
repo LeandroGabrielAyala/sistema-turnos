@@ -57,7 +57,10 @@ class TurnosRelationManager extends RelationManager
                         Tabs::make('Turno')
                             ->tabs([
 
-                                Tab::make('Información')
+                                Tab::make('informacion')
+                                    ->label(fn ($record) => 
+                                        'Información - ' . ucfirst($record->estado)
+                                    )
                                     ->icon('heroicon-o-calendar')
                                     ->schema([
 
@@ -67,19 +70,6 @@ class TurnosRelationManager extends RelationManager
 
                                         TextEntry::make('hora')
                                             ->label('◾ Hora'),
-
-                                        TextEntry::make('estado')
-                                            ->label('◾ Estado')
-                                            ->badge()
-                                            ->color(fn ($state) => match ($state) {
-                                                'confirmado' => 'success',
-                                                'cancelado' => 'danger',
-                                                'atendido' => 'primary',
-                                                default => 'gray',
-                                            }),
-
-                                        TextEntry::make('paciente.nombre_completo')
-                                            ->label('◾ Paciente'),
 
                                         // 🔥 NUEVO
                                         TextEntry::make('motivo_consulta')
@@ -100,7 +90,7 @@ class TurnosRelationManager extends RelationManager
                                             ->separator(',')
                                             ->formatStateUsing(function ($state) {
                                                 return $state ?: 'Sin estudios recomendados';
-                                            }),
+                                            })->columnSpanFull(),
 
                                     ])
                                     ->columns(2),

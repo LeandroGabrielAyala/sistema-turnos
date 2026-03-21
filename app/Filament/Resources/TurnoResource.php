@@ -408,19 +408,22 @@ class TurnoResource extends Resource
                                             ->label('◾ OBSERVACIÓN MÉDICO')
                                             ->visible(fn ($record) => $record->estado === 'atendido'),
 
-                                        TextEntry::make('estudios_formateados')
+                                        TextEntry::make('estudios')
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
-                                            ->badge()
-                                            ->separator(',')
                                             ->formatStateUsing(function ($state) {
 
+                                                $map = \App\Models\Turno::ESTUDIOS;
+
                                                 if (empty($state)) {
-                                                    return 'Sin estudios recomendados';
+                                                    return ['Sin estudios solicitados'];
                                                 }
 
-                                                return $state;
-                                            }),
+                                                return collect($state)
+                                                    ->map(fn ($item) => $map[$item] ?? $item)
+                                                    ->toArray();
+                                            })
+                                            ->badge(),
 
                                     ])
                                     ->columns(2),
@@ -483,13 +486,13 @@ class TurnoResource extends Resource
             ->defaultSort('fecha', 'desc');
     }
 
-        /**
-         * REDIRECCIONAR A LIST
-         */
-        public static function getRedirectUrl(): string
-        {
-            return static::getUrl('index');
-        }
+    /**
+     * REDIRECCIONAR A LIST
+     */
+    public static function getRedirectUrl(): string
+    {
+        return static::getUrl('index');
+    }
 
     /**
      * 🔗 RELACIONES (si hay RelationManagers)
