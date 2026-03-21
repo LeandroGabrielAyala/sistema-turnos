@@ -1,20 +1,12 @@
 @php
-    $estado = $getState();
-
     $styles = [
-        'confirmado' => 'bg-blue-100 text-blue-800',
-        'cancelado' => 'bg-red-100 text-red-800',
-        'atendido' => 'bg-green-100 text-green-800',
-    ];
-
-    $icons = [
-        'confirmado' => 'heroicon-o-clock',
-        'cancelado' => 'heroicon-o-x-circle',
-        'atendido' => 'heroicon-o-check-circle',
+        'confirmado' => 'bg-warning-100 text-warning-700',
+        'cancelado' => 'bg-danger-100 text-danger-700',
+        'atendido' => 'bg-success-100 text-success-700',
     ];
 @endphp
 
-<div x-data="{ open: false }" class="relative">
+<div x-data="{ open: false }" class="relative" @click.stop>
 
     <!-- BADGE -->
     <span
@@ -32,14 +24,29 @@
         @click.away="open = false"
         class="absolute mt-2 w-44 bg-white border rounded-lg shadow-lg z-50"
     >
-        @foreach (['confirmado', 'cancelado', 'atendido'] as $option)
-            <button
-                wire:click="callTableAction('cambiarEstado', {{ $getRecord()->id }}, '{{ $option }}')"
-                class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
-            >
-                {{ ucfirst($option) }}
-            </button>
-        @endforeach
+    @foreach (['confirmado', 'cancelado', 'atendido'] as $option)
+        @if ($option !== $estado)
+
+            @if ($option === 'atendido')
+                <!-- ABRE MODAL -->
+                <button
+                    wire:click="mountTableAction('atender', {{ $getRecord()->id }})"
+                    class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                >
+                    Atendido
+                </button>
+            @else
+                <!-- CAMBIO DIRECTO -->
+                <button
+                    wire:click="callTableAction('cambiarEstado', {{ $getRecord()->id }}, '{{ $option }}')"
+                    class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                >
+                    {{ ucfirst($option) }}
+                </button>
+            @endif
+
+        @endif
+    @endforeach
     </div>
 
 </div>
