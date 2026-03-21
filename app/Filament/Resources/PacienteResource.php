@@ -469,9 +469,19 @@ class PacienteResource extends Resource
                                                 ->badge()
                                                 ->color('primary'),
 
-                                            ViewEntry::make('recetas')
+                                            RepeatableEntry::make('recetas')
                                                 ->label('Recetas')
-                                                ->view('filament.components.recetas-preview'),
+                                                ->schema([
+                                                    TextEntry::make('receta')
+                                                        ->state(fn ($record) => $record)
+                                                        ->label('Receta')
+                                                        ->url(fn ($state) => asset('storage/' . $state), true)
+                                                        ->openUrlInNewTab(),
+                                                ])
+
+                                            // ViewEntry::make('recetas')
+                                            //     ->label('◾ RECETA:')
+                                            //     ->view('filament.components.recetas-preview'),
                                         ])
                                         ->columns(2),
                                 ]),

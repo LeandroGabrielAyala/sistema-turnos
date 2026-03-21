@@ -1,5 +1,6 @@
 <div class="flex gap-3 flex-wrap">
     @foreach ($getState() as $receta)
+        <p>◾ RECETA:</p>
         <img 
             src="{{ asset('storage/' . $receta) }}" 
             class="w-32 h-32 object-cover rounded-lg border cursor-pointer hover:scale-105 transition"
