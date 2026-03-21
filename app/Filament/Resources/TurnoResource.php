@@ -411,7 +411,8 @@ class TurnoResource extends Resource
                                         TextEntry::make('estudios_formateados')
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
-                                            ->badge(),
+                                            ->badge()
+                                            ->separator(','),
 
                                     ])
                                     ->columns(2),
