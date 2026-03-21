@@ -41,27 +41,27 @@ class Turno extends Model
         'hemograma' => 'Hemograma completo',
     ];
 
-    // public function getEstudiosFormateadosAttribute()
-    // {
-    //     $map = self::ESTUDIOS;
-    //     $state = $this->estudios;
+    public function getEstudiosFormateadosAttribute()
+    {
+        $map = self::ESTUDIOS;
+        $state = $this->estudios;
 
-    //     if (is_string($state) && str_starts_with($state, '[')) {
-    //         $state = json_decode($state, true);
-    //     }
+        if (is_string($state) && str_starts_with($state, '[')) {
+            $state = json_decode($state, true);
+        }
 
-    //     if (is_string($state)) {
-    //         return $map[$state] ?? $state;
-    //     }
+        if (is_string($state)) {
+            return $map[$state] ?? $state;
+        }
 
-    //     if (is_array($state)) {
-    //         return collect($state)
-    //             ->map(fn ($item) => $map[$item] ?? $item)
-    //             ->implode(', ');
-    //     }
+        if (is_array($state)) {
+            return collect($state)
+                ->map(fn ($item) => $map[$item] ?? $item)
+                ->implode(', ');
+        }
 
-    //     return '-';
-    // }
+        return '-';
+    }
 
     public function paciente()
     {
