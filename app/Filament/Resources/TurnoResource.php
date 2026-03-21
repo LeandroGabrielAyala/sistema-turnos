@@ -267,7 +267,7 @@ class TurnoResource extends Resource
                 BadgeColumn::make('estado')
                     ->label('Estado')
                     ->colors([
-                        'warning' => 'confirmado',
+                        'info' => 'confirmado',
                         'danger' => 'cancelado',
                         'success' => 'atendido',
                     ])
@@ -331,6 +331,7 @@ class TurnoResource extends Resource
 
                 Action::make('atender')
                     ->label('Atender')
+                    ->modalHeading('Atender turno') // 👈 TÍTULO
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn ($record) => $record->estado !== 'atendido')

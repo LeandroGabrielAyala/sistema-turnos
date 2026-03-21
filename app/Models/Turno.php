@@ -11,7 +11,9 @@ class Turno extends Model
         'fecha',
         'hora',
         'estado',
-        'observaciones'
+        'motivo_consulta',
+        'observacion_medica',
+        'estudios',
     ];
 
     protected $casts = [
