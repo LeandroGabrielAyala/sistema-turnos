@@ -351,18 +351,18 @@ class TurnoResource extends Resource
                             ->send();
                     }),
 
-                Action::make('cambiarEstado')
-                    ->action(function ($record, $arguments) {
+Action::make('cambiarEstado')
+    ->action(function ($record, $data) {
 
-                        $record->update([
-                            'estado' => $arguments,
-                        ]);
+        $record->update([
+            'estado' => $data['estado'],
+        ]);
 
-                        \Filament\Notifications\Notification::make()
-                            ->title('Estado actualizado')
-                            ->success()
-                            ->send();
-                    }),
+        \Filament\Notifications\Notification::make()
+            ->title('Estado actualizado')
+            ->success()
+            ->send();
+    }),
 
                 /**
                  * 👁 VER

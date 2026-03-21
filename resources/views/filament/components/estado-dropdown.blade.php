@@ -2,9 +2,9 @@
     $estado = $getState();
 
     $styles = [
-        'confirmado' => 'bg-warning-100 text-warning-700',
-        'cancelado' => 'bg-danger-100 text-danger-700',
-        'atendido' => 'bg-success-100 text-success-700',
+        'confirmado' => 'bg-yellow-100 text-yellow-800',
+        'cancelado' => 'bg-red-100 text-red-800',
+        'atendido' => 'bg-green-100 text-green-800',
     ];
 
     $icons = [
@@ -14,11 +14,15 @@
     ];
 @endphp
 
-<div x-data="{ open: false }" class="relative" @click.stop>
+<div 
+    x-data="{ open: false }" 
+    class="relative"
+    x-on:click.stop
+>
 
     <!-- BADGE -->
     <span
-        @click="open = !open"
+        @click.stop="open = !open"
         class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer {{ $styles[$estado] ?? 'bg-gray-100' }}"
     >
         <x-dynamic-component :component="$icons[$estado] ?? 'heroicon-o-question-mark-circle'" class="w-4 h-4"/>
@@ -32,29 +36,29 @@
         @click.away="open = false"
         class="absolute mt-2 w-44 bg-white border rounded-lg shadow-lg z-50"
     >
-    @foreach (['confirmado', 'cancelado', 'atendido'] as $option)
-        @if ($option !== $estado)
+        @foreach (['confirmado', 'cancelado', 'atendido'] as $option)
+            @if ($option !== $estado)
 
-            @if ($option === 'atendido')
-                <!-- ABRE MODAL -->
-                <button
-                    wire:click="mountTableAction('atender', {{ $getRecord()->id }})"
-                    class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
-                >
-                    Atendido
-                </button>
-            @else
-                <!-- CAMBIO DIRECTO -->
-                <button
-                    wire:click="callTableAction('cambiarEstado', {{ $getRecord()->id }}, '{{ $option }}')"
-                    class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
-                >
-                    {{ ucfirst($option) }}
-                </button>
+                @if ($option === 'atendido')
+                    <button
+                        @click.stop="open = false"
+                        wire:click="mountTableAction('atender', {{ $getRecord()->id }})"
+                        class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                    >
+                        Atendido
+                    </button>
+                @else
+                    <button
+                        @click.stop="open = false"
+                        wire:click="callTableAction('cambiarEstado', {{ $getRecord()->id }}, { estado: '{{ $option }}' })"
+                        class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                    >
+                        {{ ucfirst($option) }}
+                    </button>
+                @endif
+
             @endif
-
-        @endif
-    @endforeach
+        @endforeach
     </div>
 
 </div>
