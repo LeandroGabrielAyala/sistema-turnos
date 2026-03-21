@@ -407,7 +407,17 @@ class TurnoResource extends Resource
                                         TextEntry::make('estudios')
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
-                                            ->formatStateUsing(fn ($state) => $state ? implode(', ', $state) : '-'),
+                                            ->formatStateUsing(function ($state) {
+                                                if (is_array($state)) {
+                                                    return implode(', ', $state);
+                                                }
+
+                                                if (is_string($state)) {
+                                                    return $state;
+                                                }
+
+                                                return '-';
+                                            })
 
                                     ])
                                     ->columns(2),
