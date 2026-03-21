@@ -1,8 +1,16 @@
 @php
+    $estado = $getState();
+
     $styles = [
         'confirmado' => 'bg-warning-100 text-warning-700',
         'cancelado' => 'bg-danger-100 text-danger-700',
         'atendido' => 'bg-success-100 text-success-700',
+    ];
+
+    $icons = [
+        'confirmado' => 'heroicon-o-clock',
+        'cancelado' => 'heroicon-o-x-circle',
+        'atendido' => 'heroicon-o-check-circle',
     ];
 @endphp
 
