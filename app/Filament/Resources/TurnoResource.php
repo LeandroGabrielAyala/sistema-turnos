@@ -58,7 +58,8 @@ use Filament\Infolists\Components\{
     IconEntry,
     Tabs,
     Tabs\Tab,
-    ImageEntry
+    ImageEntry,
+    ViewEntry
 };
 
 class TurnoResource extends Resource
@@ -381,12 +382,9 @@ class TurnoResource extends Resource
                                     TextEntry::make('paciente.obraSocial.alias')
                                         ->label('Obra Social'),
 
-                                    ImageEntry::make('paciente.recetas')
-                                        ->label('Recetas del paciente')
-                                        ->stacked()
-                                        ->height(80)
-                                        ->disk('public') // 🔥 IMPORTANTE
-                                        ->multiple(),
+                                    ViewEntry::make('paciente.recetas')
+                                        ->label('◾ RECETA:')
+                                        ->view('filament.components.recetas-preview'),
                                 ])
                                 ->columns(2),
 
