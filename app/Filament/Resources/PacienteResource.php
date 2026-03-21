@@ -469,7 +469,9 @@ class PacienteResource extends Resource
                                             ImageEntry::make('recetas')
                                                 ->label('Recetas')
                                                 ->stacked()
-                                                ->height(100),
+                                                ->height(100)
+                                                ->disk('public') // 🔥 IMPORTANTE
+                                                ->multiple(),
                                         ])
                                         ->columns(2),
                                 ]),

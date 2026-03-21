@@ -384,7 +384,9 @@ class TurnoResource extends Resource
                                     ImageEntry::make('paciente.recetas')
                                         ->label('Recetas del paciente')
                                         ->stacked()
-                                        ->height(80),
+                                        ->height(80)
+                                        ->disk('public') // 🔥 IMPORTANTE
+                                        ->multiple(),
                                 ])
                                 ->columns(2),
 
