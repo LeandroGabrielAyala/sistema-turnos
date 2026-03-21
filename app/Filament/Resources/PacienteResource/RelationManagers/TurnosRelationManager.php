@@ -59,7 +59,7 @@ class TurnosRelationManager extends RelationManager
 
                                 Tab::make('informacion')
                                     ->label(fn ($record) => 
-                                        'Información - ' . ucfirst($record->estado)
+                                        'Estado: ' . ucfirst($record->estado)
                                     )
                                     ->icon('heroicon-o-calendar')
                                     ->schema([

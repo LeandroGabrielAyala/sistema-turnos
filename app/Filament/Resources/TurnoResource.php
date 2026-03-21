@@ -408,22 +408,11 @@ class TurnoResource extends Resource
                                             ->label('◾ OBSERVACIÓN MÉDICO')
                                             ->visible(fn ($record) => $record->estado === 'atendido'),
 
-                                        TextEntry::make('estudios')
+                                        TextEntry::make('estudios_formateados')
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
-                                            ->formatStateUsing(function ($state) {
-
-                                                $map = \App\Models\Turno::ESTUDIOS;
-
-                                                if (empty($state)) {
-                                                    return ['Sin estudios solicitados'];
-                                                }
-
-                                                return collect($state)
-                                                    ->map(fn ($item) => $map[$item] ?? $item)
-                                                    ->toArray();
-                                            })
-                                            ->badge(),
+                                            ->badge()
+                                            ->separator(','),
 
                                     ])
                                     ->columns(2),
@@ -486,13 +475,13 @@ class TurnoResource extends Resource
             ->defaultSort('fecha', 'desc');
     }
 
-    /**
-     * REDIRECCIONAR A LIST
-     */
-    public static function getRedirectUrl(): string
-    {
-        return static::getUrl('index');
-    }
+        /**
+         * REDIRECCIONAR A LIST
+         */
+        public static function getRedirectUrl(): string
+        {
+            return static::getUrl('index');
+        }
 
     /**
      * 🔗 RELACIONES (si hay RelationManagers)
