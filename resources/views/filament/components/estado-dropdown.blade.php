@@ -53,7 +53,7 @@
                 @else
                     <button
                         @click.stop="open = false"
-                        wire:click="callTableAction('cambiarEstado', {{ $getRecord()->id }}, { estado: '{{ $option }}' })"
+                        wire:click="mountTableAction('cambiarEstado', {{ $getRecord()->id }}, { estado: '{{ $option }}' })"
                         class="block w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
                     >
                         {{ ucfirst($option) }}

@@ -338,16 +338,18 @@ class TurnoResource extends Resource
                                 ->options(Turno::ESTUDIOS)
                                 ->columnSpanFull(),
                         ])
-                        ->action(function ($record, $data) {
+                        ->action(function ($record, $arguments) {
+
+                            $estado = $arguments['estado'] ?? null;
+
+                            if (!$estado) return;
 
                             $record->update([
-                                'estado' => 'atendido',
-                                'observacion_medica' => $data['observacion_medica'],
-                                'estudios' => $data['estudios'],
+                                'estado' => $estado,
                             ]);
 
                             \Filament\Notifications\Notification::make()
-                                ->title('Turno Atendido Correctamente')
+                                ->title('Estado actualizado')
                                 ->success()
                                 ->send();
                         }),
