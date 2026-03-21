@@ -331,7 +331,9 @@ class TurnoResource extends Resource
 
                 Action::make('atender')
                     ->label('Atender')
-                    ->modalHeading('Atender turno') // 👈 TÍTULO
+                    ->modalHeading(fn ($record) => 
+                        'Atendido: Completar el Turno de ' . $record->paciente->nombre_completo
+                    )
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn ($record) => $record->estado !== 'atendido')
@@ -395,7 +397,14 @@ class TurnoResource extends Resource
                                             ->label('◾ HORA'),
 
                                         TextEntry::make('estado')
-                                            ->label('◾ ESTADO'),
+                                            ->label('◾ ESTADO')
+                                            ->badge()
+                                            ->color(fn ($state) => match ($state) {
+                                                'confirmado' => 'info',
+                                                'cancelado' => 'danger',
+                                                'atendido' => 'success',
+                                                default => 'gray',
+                                            }),
 
                                         TextEntry::make('motivo_consulta')
                                             ->label('◾ MOTIVO TURNO'),
@@ -408,16 +417,26 @@ class TurnoResource extends Resource
                                             ->label('◾ ESTUDIOS')
                                             ->visible(fn ($record) => $record->estado === 'atendido')
                                             ->formatStateUsing(function ($state) {
+
+                                                $map = [
+                                                    'radiografia' => 'Radiografía',
+                                                    'analisis_sangre' => 'Análisis de sangre',
+                                                    'ecografia' => 'Ecografía',
+                                                    'resonancia' => 'Resonancia',
+                                                ];
+
                                                 if (is_array($state)) {
-                                                    return implode(', ', $state);
+                                                    return collect($state)
+                                                        ->map(fn ($item) => $map[$item] ?? $item)
+                                                        ->implode(', ');
                                                 }
 
                                                 if (is_string($state)) {
-                                                    return $state;
+                                                    return $map[$state] ?? $state;
                                                 }
 
                                                 return '-';
-                                            })
+                                            }),
 
                                     ])
                                     ->columns(2),
