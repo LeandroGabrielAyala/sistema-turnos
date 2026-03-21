@@ -47,7 +47,8 @@ use Filament\Tables\Actions\{
     ViewAction,
     EditAction,
     DeleteAction,
-    DeleteBulkAction
+    DeleteBulkAction,
+    Action
 };
 
 /**
@@ -263,22 +264,18 @@ class TurnoResource extends Resource
                             );
                     }),
 
-                SelectColumn::make('estado')
-                    ->options([
-                        'confirmado' => 'Confirmado',
-                        'cancelado' => 'Cancelado',
-                        'atendido' => 'Atendido',
+                BadgeColumn::make('estado')
+                    ->label('Estado')
+                    ->colors([
+                        'warning' => 'confirmado',
+                        'danger' => 'cancelado',
+                        'success' => 'atendido',
                     ])
-                    ->afterStateUpdated(function ($record, $state) {
-
-                        if ($state === 'atendido') {
-                            \Filament\Notifications\Notification::make()
-                                ->title('Completar atención')
-                                ->body('Debe completar la observación médica')
-                                ->warning()
-                                ->send();
-                        }
-                    }),
+                    ->icons([
+                        'heroicon-o-clock' => 'confirmado',
+                        'heroicon-o-x-circle' => 'cancelado',
+                        'heroicon-o-check-circle' => 'atendido',
+                    ]),
             ])
 
             /**
@@ -329,78 +326,119 @@ class TurnoResource extends Resource
              */
             ->actions([
                 /**
+                 * ATENDER
+                 */
+
+                Action::make('atender')
+                    ->label('Atender')
+                    ->icon('heroicon-o-check')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->estado !== 'atendido')
+                    ->form([
+                        Textarea::make('observacion_medica')
+                            ->label('Observación médica')
+                            ->required()
+                            ->columnSpanFull(),
+
+                        Select::make('estudios')
+                            ->label('Estudios')
+                            ->multiple()
+                            ->options([
+                                'radiografia' => 'Radiografía',
+                                'analisis_sangre' => 'Análisis de sangre',
+                                'ecografia' => 'Ecografía',
+                                'resonancia' => 'Resonancia',
+                            ])
+                            ->columnSpanFull(),
+                    ])
+                    ->action(function ($record, $data) {
+
+                        $record->update([
+                            'estado' => 'atendido',
+                            'observacion_medica' => $data['observacion_medica'],
+                            'estudios' => $data['estudios'],
+                        ]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Turno atendido correctamente')
+                            ->success()
+                            ->send();
+                    }),
+
+                /**
                  * 👁 VER
                  */
-            ViewAction::make()
-                ->label('Ver')
-                ->modalHeading(fn ($record) =>
-                    'Detalle del Turno - ' .
-                    $record->fecha->format('d/m/Y') . ' ' .
-                    $record->hora
-                )
-                ->modalWidth('4xl')
-                ->infolist([
-                    Tabs::make('Tabs')
-                        ->tabs([
+                ViewAction::make()
+                    ->label('Ver')
+                    ->modalHeading(fn ($record) =>
+                        'Detalle del Turno - ' .
+                        $record->fecha->format('d/m/Y') . ' ' .
+                        $record->hora
+                    )
+                    ->modalWidth('4xl')
+                    ->infolist([
+                        Tabs::make('Tabs')
+                            ->tabs([
 
-                            Tab::make('Estado')
-                                ->icon('heroicon-o-bookmark')
-                                ->schema([
-                                    TextEntry::make('paciente.nombre_completo')
-                                        ->label('Paciente'),
+                                Tab::make('Estado')
+                                    ->icon('heroicon-o-bookmark')
+                                    ->schema([
+                                        TextEntry::make('paciente.nombre_completo')
+                                            ->label('◾ PACIENTE'),
 
-                                    TextEntry::make('fecha')
-                                        ->date('d/m/Y')
-                                        ->label('Fecha'),
+                                        TextEntry::make('fecha')
+                                            ->date('d/m/Y')
+                                            ->label('◾ FECHA'),
 
-                                    TextEntry::make('hora')
-                                        ->label('Hora'),
+                                        TextEntry::make('hora')
+                                            ->label('◾ HORA'),
 
-                                    TextEntry::make('estado')
-                                        ->label('Estado'),
+                                        TextEntry::make('estado')
+                                            ->label('◾ ESTADO'),
 
-                                    TextEntry::make('motivo_consulta')
-                                        ->label('Motivo'),
+                                        TextEntry::make('motivo_consulta')
+                                            ->label('◾ MOTIVO TURNO'),
 
-                                    TextEntry::make('observacion_medica')
-                                        ->label('Observación del médico')
-                                        ->visible(fn ($record) => $record->estado === 'atendido'),
+                                        TextEntry::make('observacion_medica')
+                                            ->label('◾ OBSERVACIÓN MÉDICO')
+                                            ->visible(fn ($record) => $record->estado === 'atendido'),
 
-                                    TextEntry::make('estudios')
-                                        ->label('Estudios')
-                                        ->formatStateUsing(fn ($state) => $state ? implode(', ', $state) : '-'),
+                                        TextEntry::make('estudios')
+                                            ->label('◾ ESTUDIOS')
+                                            ->visible(fn ($record) => $record->estado === 'atendido')
+                                            ->formatStateUsing(fn ($state) => $state ? implode(', ', $state) : '-'),
 
-                                ])
-                                ->columns(2),
+                                    ])
+                                    ->columns(2),
 
-                            Tab::make('Paciente')
-                                ->icon('heroicon-o-user')
-                                ->schema([
-                                    TextEntry::make('paciente.dni')
-                                        ->label('◾ DNI:'),
-                                        
-                                    TextEntry::make('paciente.telefono')
-                                        ->label('◾ TELÉFONO'),
+                                Tab::make('Paciente')
+                                    ->icon('heroicon-o-user')
+                                    ->schema([
+                                        TextEntry::make('paciente.dni')
+                                            ->label('◾ DNI:'),
+                                            
+                                        TextEntry::make('paciente.telefono')
+                                            ->label('◾ TELÉFONO'),
 
-                                    TextEntry::make('paciente.obraSocial.alias')
-                                        ->label('◾ OBRA SOCIAL')
-                                        ->formatStateUsing(function ($state, $record) {
-                                            $obra = $record->paciente?->obraSocial;
+                                        TextEntry::make('paciente.obraSocial.alias')
+                                            ->label('◾ OBRA SOCIAL')
+                                            ->formatStateUsing(function ($state, $record) {
+                                                $obra = $record->paciente?->obraSocial;
 
-                                            return $obra
-                                                ? "{$obra->alias} - {$obra->nombre}"
-                                                : '-';
-                                        }),
+                                                return $obra
+                                                    ? "{$obra->alias} - {$obra->nombre}"
+                                                    : '-';
+                                            }),
 
-                                    ViewEntry::make('paciente.recetas')
-                                        ->label('◾ RECETA:')
-                                        ->view('filament.components.recetas-preview')
-                                        ->columnSpanFull(),
-                                ])
-                                ->columns(2),
+                                        ViewEntry::make('paciente.recetas')
+                                            ->label('◾ RECETA:')
+                                            ->view('filament.components.recetas-preview')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(2),
 
-                        ]),
-                ]),
+                            ]),
+                    ]),
 
                 /**
                  * ✏️ EDITAR
