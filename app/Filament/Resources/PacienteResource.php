@@ -66,6 +66,7 @@ use Filament\Infolists\Components\{
     IconEntry,
     Tabs as InfolistTabs,
     Tabs\Tab as InfolistTab,
+    RepeatableEntry,
     ImageEntry
 
 };
@@ -466,12 +467,14 @@ class PacienteResource extends Resource
                                                 ->badge()
                                                 ->color('primary'),
 
-                                            ImageEntry::make('recetas')
+                                            RepeatableEntry::make('recetas')
                                                 ->label('Recetas')
-                                                ->stacked()
-                                                ->height(100)
-                                                ->disk('public') // 🔥 IMPORTANTE
-                                                ->multiple(),
+                                                ->schema([
+                                                    ImageEntry::make('.')
+                                                        ->disk('public')
+                                                        ->height(100),
+                                                ])
+                                                ->columns(3),
                                         ])
                                         ->columns(2),
                                 ]),
