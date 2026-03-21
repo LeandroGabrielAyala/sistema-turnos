@@ -332,25 +332,38 @@ class TurnoResource extends Resource
                 Action::make('atender')
                     ->label('Atender')
                     ->modalHeading(fn ($record) => 
-                        'Atendido: Completar el Turno de ' . $record->paciente->nombre_completo
+                        'ATENDIDO - Completar el Turno de ' . $record->paciente->nombre_completo
                     )
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->visible(fn ($record) => $record->estado !== 'atendido')
+                    ->visible(fn ($record) => $record->estado === 'confirmado')
                     ->form([
                         Textarea::make('observacion_medica')
-                            ->label('Observación médica')
+                            ->label('Observación del Médico:')
                             ->required()
                             ->columnSpanFull(),
 
                         Select::make('estudios')
-                            ->label('Estudios')
+                            ->label('Estudios a realizar:')
                             ->multiple()
                             ->options([
                                 'radiografia' => 'Radiografía',
                                 'analisis_sangre' => 'Análisis de sangre',
+                                'analisis_orina' => 'Análisis de orina',
                                 'ecografia' => 'Ecografía',
-                                'resonancia' => 'Resonancia',
+                                'resonancia' => 'Resonancia magnética',
+                                'tomografia' => 'Tomografía computada',
+                                'electrocardiograma' => 'Electrocardiograma (ECG)',
+                                'ergometria' => 'Ergometría (prueba de esfuerzo)',
+                                'holter' => 'Holter cardíaco',
+                                'endoscopia' => 'Endoscopía',
+                                'colonoscopia' => 'Colonoscopía',
+                                'mamografia' => 'Mamografía',
+                                'densitometria_osea' => 'Densitometría ósea',
+                                'prueba_covid' => 'Test COVID-19',
+                                'perfil_lipidico' => 'Perfil lipídico',
+                                'glucemia' => 'Glucemia',
+                                'hemograma' => 'Hemograma completo',
                             ])
                             ->columnSpanFull(),
                     ])
@@ -363,7 +376,7 @@ class TurnoResource extends Resource
                         ]);
 
                         \Filament\Notifications\Notification::make()
-                            ->title('Turno atendido correctamente')
+                            ->title('Turno Atendido Correctamente')
                             ->success()
                             ->send();
                     }),
@@ -404,7 +417,12 @@ class TurnoResource extends Resource
                                                 'cancelado' => 'danger',
                                                 'atendido' => 'success',
                                                 default => 'gray',
-                                            }),
+                                            })
+                                            ->icons([
+                                                'heroicon-o-clock' => 'confirmado',
+                                                'heroicon-o-x-circle' => 'cancelado',
+                                                'heroicon-o-check-circle' => 'atendido',
+                                            ]),
 
                                         TextEntry::make('motivo_consulta')
                                             ->label('◾ MOTIVO TURNO'),
