@@ -471,12 +471,14 @@ class PacienteResource extends Resource
                                             RepeatableEntry::make('recetas')
                                                 ->label('Recetas')
                                                 ->schema([
-                                                    ImageEntry::make('receta')
-                                                        ->getStateUsing(fn ($state) => $state) // 🔥 clave
+                                                    ImageEntry::make('value') // 👈 IMPORTANTE
                                                         ->disk('public')
                                                         ->height(100),
                                                 ])
-                                                ->columnSpanFull(),
+                                                ->columns(3)
+                                                ->formatStateUsing(fn ($state) =>
+                                                    collect($state)->map(fn ($item) => ['value' => $item])->toArray()
+                                                ),
                                         ])
                                         ->columns(2),
                                 ]),
