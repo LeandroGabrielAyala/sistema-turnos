@@ -24,12 +24,12 @@
         >
 
         <!-- Botón cerrar -->
-        <button 
+        {{-- <button 
             class="absolute top-5 right-5 text-white text-3xl"
             @click="open = false"
         >
             ✕
-        </button>
+        </button> --}}
     </div>
 
 </div>
