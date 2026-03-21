@@ -349,7 +349,7 @@ class TurnoResource extends Resource
                         $record->update([
                             'estado' => 'atendido',
                             'observacion_medica' => $data['observacion_medica'],
-                            'estudios' => $data['estudios'],
+                            'estudios' => array_values($data['estudios'] ?? []),
                         ]);
 
                         \Filament\Notifications\Notification::make()
@@ -408,33 +408,9 @@ class TurnoResource extends Resource
                                             ->label('◾ OBSERVACIÓN MÉDICO')
                                             ->visible(fn ($record) => $record->estado === 'atendido'),
 
-TextEntry::make('estudios')
-    ->label('◾ ESTUDIOS')
-    ->visible(fn ($record) => $record->estado === 'atendido')
-    ->formatStateUsing(function ($state) {
-
-        $map = Turno::ESTUDIOS;
-
-        // 🔥 Normalizar a array SIEMPRE
-        if (is_string($state)) {
-            $decoded = json_decode($state, true);
-            $state = is_array($decoded) ? $decoded : [$state];
-        }
-
-        if (!is_array($state)) {
-            return '-';
-        }
-
-        return collect($state)
-            ->map(function ($item) use ($map) {
-
-                // 🔥 NORMALIZAR CLAVE
-                $key = trim(strtolower($item));
-
-                return $map[$key] ?? $item;
-            })
-            ->implode(', ');
-    }),
+                                        TextEntry::make('estudios_formateados')
+                                            ->label('◾ ESTUDIOS')
+                                            ->visible(fn ($record) => $record->estado === 'atendido'),
 
                                     ])
                                     ->columns(2),
