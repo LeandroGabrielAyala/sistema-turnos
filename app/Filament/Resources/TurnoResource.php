@@ -376,15 +376,26 @@ class TurnoResource extends Resource
                             Tab::make('Paciente')
                                 ->icon('heroicon-o-user')
                                 ->schema([
-                                    TextEntry::make('paciente.dni')->label('DNI'),
-                                    TextEntry::make('paciente.telefono')->label('Teléfono'),
+                                    TextEntry::make('paciente.dni')
+                                        ->label('◾ DNI:'),
+                                        
+                                    TextEntry::make('paciente.telefono')
+                                        ->label('◾ TELÉFONO'),
 
                                     TextEntry::make('paciente.obraSocial.alias')
-                                        ->label('Obra Social'),
+                                        ->label('◾ OBRA SOCIAL')
+                                        ->formatStateUsing(function ($state, $record) {
+                                            $obra = $record->paciente?->obraSocial;
+
+                                            return $obra
+                                                ? "{$obra->alias} - {$obra->nombre}"
+                                                : '-';
+                                        }),
 
                                     ViewEntry::make('paciente.recetas')
                                         ->label('◾ RECETA:')
-                                        ->view('filament.components.recetas-preview'),
+                                        ->view('filament.components.recetas-preview')
+                                        ->columnSpanFull(),
                                 ])
                                 ->columns(2),
 

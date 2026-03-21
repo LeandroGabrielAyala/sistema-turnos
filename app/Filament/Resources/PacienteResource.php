@@ -471,7 +471,8 @@ class PacienteResource extends Resource
 
                                             ViewEntry::make('recetas')
                                                 ->label('◾ RECETA:')
-                                                ->view('filament.components.recetas-preview'),
+                                                ->view('filament.components.recetas-preview')
+                                                ->columnSpanFull(),
                                         ])
                                         ->columns(2),
                                 ]),
