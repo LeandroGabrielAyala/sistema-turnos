@@ -342,6 +342,8 @@ class TurnoResource extends Resource
                             ->label('Estudios a realizar:')
                             ->multiple()
                             ->options(Turno::ESTUDIOS)
+                            ->placeholder('Sin estudios solicitados')
+                            ->helperText('Si no selecciona ninguno, se guardará como: "Sin estudios solicitados"')
                             ->columnSpanFull(),
                     ])
                     ->action(function ($record, $data) {

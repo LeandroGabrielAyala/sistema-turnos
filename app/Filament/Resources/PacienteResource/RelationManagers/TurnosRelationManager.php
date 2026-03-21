@@ -64,12 +64,12 @@ class TurnosRelationManager extends RelationManager
                                     ->icon('heroicon-o-calendar')
                                     ->schema([
 
-                                        TextEntry::make('fecha')
-                                            ->label('◾ Fecha')
-                                            ->date('d/m/Y'),
+                                        // TextEntry::make('fecha')
+                                        //     ->label('◾ Fecha')
+                                        //     ->date('d/m/Y'),
 
-                                        TextEntry::make('hora')
-                                            ->label('◾ Hora'),
+                                        // TextEntry::make('hora')
+                                        //     ->label('◾ Hora'),
 
                                         // 🔥 NUEVO
                                         TextEntry::make('motivo_consulta')
