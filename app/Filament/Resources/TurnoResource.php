@@ -408,25 +408,32 @@ class TurnoResource extends Resource
                                             ->label('◾ OBSERVACIÓN MÉDICO')
                                             ->visible(fn ($record) => $record->estado === 'atendido'),
 
-                                        TextEntry::make('estudios')
-                                            ->label('◾ ESTUDIOS')
-                                            ->visible(fn ($record) => $record->estado === 'atendido')
-                                            ->formatStateUsing(function ($state) {
+TextEntry::make('estudios')
+    ->label('◾ ESTUDIOS')
+    ->visible(fn ($record) => $record->estado === 'atendido')
+    ->formatStateUsing(function ($state) {
 
-                                                $map = Turno::ESTUDIOS;
+        $map = Turno::ESTUDIOS;
 
-                                                if (is_array($state)) {
-                                                    return collect($state)
-                                                        ->map(fn ($item) => $map[$item] ?? $item)
-                                                        ->implode(', ');
-                                                }
+        // 🔥 Caso 1: viene como JSON string
+        if (is_string($state) && str_starts_with($state, '[')) {
+            $state = json_decode($state, true);
+        }
 
-                                                if (is_string($state)) {
-                                                    return $map[$state] ?? $state;
-                                                }
+        // 🔥 Caso 2: viene como string simple
+        if (is_string($state)) {
+            return $map[$state] ?? $state;
+        }
 
-                                                return '-';
-                                            }),
+        // 🔥 Caso 3: array correcto
+        if (is_array($state)) {
+            return collect($state)
+                ->map(fn ($item) => $map[$item] ?? $item)
+                ->implode(', ');
+        }
+
+        return '-';
+    }),
 
                                     ])
                                     ->columns(2),
