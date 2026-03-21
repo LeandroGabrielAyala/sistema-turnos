@@ -228,6 +228,7 @@ class TurnoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->searchable()
 
             /**
@@ -318,52 +319,38 @@ class TurnoResource extends Resource
                  */
 
                 Action::make('atender')
-                    ->label('Atender')
-                    ->modalHeading(fn ($record) => 
-                        'ATENDIDO - Completar el Turno de ' . $record->paciente->nombre_completo
-                    )
-                    ->icon('heroicon-o-check')
-                    ->color('success')
-                    ->visible(fn ($record) => $record->estado === 'confirmado')
-                    ->form([
-                        Textarea::make('observacion_medica')
-                            ->label('Observación del Médico:')
-                            ->required()
-                            ->columnSpanFull(),
+                        ->label('Atender')
+                        ->modalHeading(fn ($record) => 
+                            'ATENDIDO - Completar el Turno de ' . $record->paciente->nombre_completo
+                        )
+                        ->icon('heroicon-o-check')
+                        ->color('success')
+                        ->visible(fn ($record) => $record->estado === 'confirmado')
+                        ->form([
+                            Textarea::make('observacion_medica')
+                                ->label('Observación del Médico:')
+                                ->required()
+                                ->columnSpanFull(),
 
-                        Select::make('estudios')
-                            ->label('Estudios a realizar:')
-                            ->multiple()
-                            ->options(Turno::ESTUDIOS)
-                            ->columnSpanFull(),
-                    ])
-                    ->action(function ($record, $data) {
+                            Select::make('estudios')
+                                ->label('Estudios a realizar:')
+                                ->multiple()
+                                ->options(Turno::ESTUDIOS)
+                                ->columnSpanFull(),
+                        ])
+                        ->action(function ($record, $data) {
 
-                        $record->update([
-                            'estado' => 'atendido',
-                            'observacion_medica' => $data['observacion_medica'],
-                            'estudios' => $data['estudios'],
-                        ]);
+                            $record->update([
+                                'estado' => 'atendido',
+                                'observacion_medica' => $data['observacion_medica'],
+                                'estudios' => $data['estudios'],
+                            ]);
 
-                        \Filament\Notifications\Notification::make()
-                            ->title('Turno Atendido Correctamente')
-                            ->success()
-                            ->send();
-                    }),
-
-Action::make('cambiarEstado')
-    ->action(function ($record, $data) {
-
-        $record->update([
-            'estado' => $data['estado'],
-        ]);
-
-        \Filament\Notifications\Notification::make()
-            ->title('Estado actualizado')
-            ->success()
-            ->send();
-    }),
-
+                            \Filament\Notifications\Notification::make()
+                                ->title('Turno Atendido Correctamente')
+                                ->success()
+                                ->send();
+                        }),
                 /**
                  * 👁 VER
                  */

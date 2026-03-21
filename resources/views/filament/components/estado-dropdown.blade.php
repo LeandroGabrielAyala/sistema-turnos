@@ -2,9 +2,9 @@
     $estado = $getState();
 
     $styles = [
-        'confirmado' => 'bg-yellow-100 text-yellow-800',
-        'cancelado' => 'bg-red-100 text-red-800',
-        'atendido' => 'bg-green-100 text-green-800',
+        'confirmado' => '!bg-yellow-100 !text-yellow-800',
+        'cancelado' => '!bg-red-100 !text-red-800',
+        'atendido' => '!bg-green-100 !text-green-800',
     ];
 
     $icons = [
@@ -23,9 +23,12 @@
     <!-- BADGE -->
     <span
         @click.stop="open = !open"
-        class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer {{ $styles[$estado] ?? 'bg-gray-100' }}"
+        class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer border {{ $styles[$estado] ?? '' }}"
     >
-        <x-dynamic-component :component="$icons[$estado] ?? 'heroicon-o-question-mark-circle'" class="w-4 h-4"/>
+        <x-dynamic-component 
+            :component="$icons[$estado] ?? 'heroicon-o-question-mark-circle'" 
+            class="w-4 h-4"
+        />
         {{ ucfirst($estado) }}
     </span>
 
