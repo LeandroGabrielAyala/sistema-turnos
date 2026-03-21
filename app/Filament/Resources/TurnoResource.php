@@ -381,13 +381,6 @@ class TurnoResource extends Resource
                                         TextEntry::make('paciente.nombre_completo')
                                             ->label('◾ PACIENTE'),
 
-                                        TextEntry::make('fecha')
-                                            ->date('d/m/Y')
-                                            ->label('◾ FECHA'),
-
-                                        TextEntry::make('hora')
-                                            ->label('◾ HORA'),
-
                                         TextEntry::make('estado')
                                             ->label('◾ ESTADO')
                                             ->badge()
@@ -402,6 +395,13 @@ class TurnoResource extends Resource
                                                 'heroicon-o-x-circle' => 'cancelado',
                                                 'heroicon-o-check-circle' => 'atendido',
                                             ]),
+
+                                        TextEntry::make('fecha')
+                                            ->date('d/m/Y')
+                                            ->label('◾ FECHA'),
+
+                                        TextEntry::make('hora')
+                                            ->label('◾ HORA'),
 
                                         TextEntry::make('motivo_consulta')
                                             ->label('◾ MOTIVO TURNO'),

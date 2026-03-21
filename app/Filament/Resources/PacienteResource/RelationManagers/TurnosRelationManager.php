@@ -38,10 +38,9 @@ class TurnosRelationManager extends RelationManager
                     ->label('Estado')
                     ->badge()
                     ->color(fn ($state) => match ($state) {
-                        'pendiente' => 'warning',
-                        'confirmado' => 'success',
+                        'confirmado' => 'info',
                         'cancelado' => 'danger',
-                        'atendido' => 'primary',
+                        'atendido' => 'success',
                     }),
             ])
 
