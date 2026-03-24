@@ -309,6 +309,14 @@ class PacienteResource extends Resource
     {
         return $table
             ->searchable()
+            /**
+             * ORDEN ALFABETICO
+             */
+            ->defaultSort(function ($query) {
+                return $query
+                    ->orderBy('apellido')
+                    ->orderBy('nombre');
+            })
 
             /**
              * 🔹 COLUMNAS
@@ -317,10 +325,11 @@ class PacienteResource extends Resource
                 TextColumn::make('nombre_completo')
                     ->label('Paciente')
                     ->searchable(['apellido', 'nombre'])
-                    ->sortable(query: fn ($query, $direction) =>
-                        $query->orderBy('apellido', $direction)
-                              ->orderBy('nombre', $direction)
-                    ),
+                    ->sortable(query: function ($query, $direction) {
+                        return $query
+                            ->orderBy('apellido', $direction)
+                            ->orderBy('nombre', $direction);
+                    }),
 
                 TextColumn::make('dni')->label('DNI'),
 
