@@ -190,8 +190,7 @@ class TurnoResource extends Resource
              */
             DatePicker::make('fecha')
                 ->label('Fecha')
-                ->required()
-                ->minDate(now()),
+                ->required(),
 
             /**
              * Hora del turno
