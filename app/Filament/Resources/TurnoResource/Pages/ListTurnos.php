@@ -31,64 +31,39 @@ class ListTurnos extends ListRecords
         return 'Lista';
     }
 
-public function getTabs(): array
-{
-    return [
+    public function getTabs(): array
+    {
+        $today = Carbon::today();
 
-        'hoy' => Tab::make('Hoy')
-            ->modifyQueryUsing(function (Builder $query) {
+        return [
 
-                $query->whereDate(
-                    'fecha',
-                    Carbon::today()
-                );
-            })
-            ->badge(fn () =>
-                \App\Models\Turno::whereDate(
-                    'fecha',
-                    Carbon::today()
-                )->count()
-            )
-            ->badgeColor('success'),
+            'hoy' => Tab::make('Hoy')
+                ->modifyQueryUsing(function (Builder $query) use ($today) {
+                    $query->whereDate('fecha', $today);
+                })
+                ->badge(fn () =>
+                    \App\Models\Turno::whereDate('fecha', $today)->count()
+                )
+                ->badgeColor('success'),
 
-        'proximos' => Tab::make('Próximos')
-            ->modifyQueryUsing(function (Builder $query) {
+            'anteriores' => Tab::make('Anteriores')
+                ->modifyQueryUsing(function (Builder $query) use ($today) {
+                    $query->whereDate('fecha', '<', $today);
+                })
+                ->badge(fn () =>
+                    \App\Models\Turno::whereDate('fecha', '<', $today)->count()
+                )
+                ->badgeColor('gray'),
 
-                $query->where(function ($q) {
+            'proximos' => Tab::make('Próximos')
+                ->modifyQueryUsing(function (Builder $query) use ($today) {
+                    $query->whereDate('fecha', '>', $today);
+                })
+                ->badge(fn () =>
+                    \App\Models\Turno::whereDate('fecha', '>', $today)->count()
+                )
+                ->badgeColor('warning'),
 
-                    $q->whereDate('fecha', '>', Carbon::today())
-
-                      ->orWhere(function ($q2) {
-
-                          $q2->whereDate('fecha', Carbon::today())
-                             ->whereTime('hora', '>', Carbon::now()->format('H:i:s'));
-
-                      });
-
-                });
-
-            })
-            ->badgeColor('warning'),
-
-        'anteriores' => Tab::make('Anteriores')
-            ->modifyQueryUsing(function (Builder $query) {
-
-                $query->where(function ($q) {
-
-                    $q->whereDate('fecha', '<', Carbon::today())
-
-                      ->orWhere(function ($q2) {
-
-                          $q2->whereDate('fecha', Carbon::today())
-                             ->whereTime('hora', '<', Carbon::now()->format('H:i:s'));
-
-                      });
-
-                });
-
-            })
-            ->badgeColor('gray'),
-
-    ];
-}
+        ];
+    }
 }
