@@ -44,7 +44,7 @@ class ListTurnos extends ListRecords
                 ->badge(fn () =>
                     \App\Models\Turno::whereDate('fecha', '=', $today)->count()
                 )
-                ->badgeColor('success'),
+                ->badgeColor('primary'),
 
             'anteriores' => Tab::make('Anteriores')
                 ->modifyQueryUsing(function (Builder $query) use ($today) {
@@ -53,7 +53,7 @@ class ListTurnos extends ListRecords
                 ->badge(fn () =>
                     \App\Models\Turno::whereDate('fecha', '<', $today)->count()
                 )
-                ->badgeColor('gray'),
+                ->badgeColor('primary'),
 
             'proximos' => Tab::make('Próximos')
                 ->modifyQueryUsing(function (Builder $query) use ($today) {
@@ -62,7 +62,7 @@ class ListTurnos extends ListRecords
                 ->badge(fn () =>
                     \App\Models\Turno::whereDate('fecha', '>', $today)->count()
                 )
-                ->badgeColor('warning'),
+                ->badgeColor('primary'),
 
         ];
     }
