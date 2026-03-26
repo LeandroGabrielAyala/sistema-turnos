@@ -33,16 +33,16 @@ class ListTurnos extends ListRecords
 
     public function getTabs(): array
     {
-        $today = Carbon::today();
+        $today = Carbon::now('America/Argentina/Buenos_Aires')->toDateString();
 
         return [
 
             'hoy' => Tab::make('Hoy')
                 ->modifyQueryUsing(function (Builder $query) use ($today) {
-                    $query->whereDate('fecha', $today);
+                    $query->whereDate('fecha', '=', $today);
                 })
                 ->badge(fn () =>
-                    \App\Models\Turno::whereDate('fecha', $today)->count()
+                    \App\Models\Turno::whereDate('fecha', '=', $today)->count()
                 )
                 ->badgeColor('success'),
 
