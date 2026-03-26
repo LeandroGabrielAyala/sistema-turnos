@@ -31,58 +31,64 @@ class ListTurnos extends ListRecords
         return 'Lista';
     }
 
-    public function getTabs(): array
-    {
-        return [
+public function getTabs(): array
+{
+    return [
 
-            'hoy' => Tab::make('Hoy')
-                ->modifyQueryUsing(function (Builder $query) {
-                    $query->whereDate(
-                        'fecha',
-                        Carbon::today()
-                    );
-                })
-                ->badge(fn () =>
-                    \App\Models\Turno::whereDate(
-                        'fecha',
-                        Carbon::today()
-                    )->count()
-                )
-                ->badgeColor('success'),
+        'hoy' => Tab::make('Hoy')
+            ->modifyQueryUsing(function (Builder $query) {
 
-            'anteriores' => Tab::make('Anteriores')
-                ->modifyQueryUsing(function (Builder $query) {
-                    $query->whereDate(
-                        'fecha',
-                        '<',
-                        Carbon::today()
-                    );
-                })
-                ->badge(fn () =>
-                    \App\Models\Turno::whereDate(
-                        'fecha',
-                        '<',
-                        Carbon::today()
-                    )->count()
-                )
-                ->badgeColor('gray'),
-            'proximos' => Tab::make('Próximos')
-                ->modifyQueryUsing(function (Builder $query) {
-                    $query->whereDate(
-                        'fecha',
-                        '>',
-                        Carbon::today()
-                    );
-                })
-                ->badge(fn () =>
-                    \App\Models\Turno::whereDate(
-                        'fecha',
-                        '>',
-                        Carbon::today()
-                    )->count()
-                )
-                ->badgeColor('warning'),
+                $query->whereDate(
+                    'fecha',
+                    Carbon::today()
+                );
+            })
+            ->badge(fn () =>
+                \App\Models\Turno::whereDate(
+                    'fecha',
+                    Carbon::today()
+                )->count()
+            )
+            ->badgeColor('success'),
 
-        ];
-    }
+        'proximos' => Tab::make('Próximos')
+            ->modifyQueryUsing(function (Builder $query) {
+
+                $query->where(function ($q) {
+
+                    $q->whereDate('fecha', '>', Carbon::today())
+
+                      ->orWhere(function ($q2) {
+
+                          $q2->whereDate('fecha', Carbon::today())
+                             ->whereTime('hora', '>', Carbon::now()->format('H:i:s'));
+
+                      });
+
+                });
+
+            })
+            ->badgeColor('warning'),
+
+        'anteriores' => Tab::make('Anteriores')
+            ->modifyQueryUsing(function (Builder $query) {
+
+                $query->where(function ($q) {
+
+                    $q->whereDate('fecha', '<', Carbon::today())
+
+                      ->orWhere(function ($q2) {
+
+                          $q2->whereDate('fecha', Carbon::today())
+                             ->whereTime('hora', '<', Carbon::now()->format('H:i:s'));
+
+                      });
+
+                });
+
+            })
+            ->badgeColor('gray'),
+
+    ];
+}
 }
