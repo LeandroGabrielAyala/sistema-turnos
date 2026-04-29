@@ -159,6 +159,9 @@ Select::make('paciente_id')
         name: 'paciente',
         titleAttribute: 'apellido'
     )
+    ->getOptionLabelFromRecordUsing(fn ($record) =>
+        "{$record->apellido}, {$record->nombre}"
+    )
     ->searchable(['apellido', 'nombre'])
     ->preload(false)
     ->required(),
