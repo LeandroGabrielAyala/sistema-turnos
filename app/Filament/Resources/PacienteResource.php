@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ObraSocialResource\RelationManagers\TurnosRelationManager;
+use App\Filament\Resources\PacienteResource\RelationManagers\TurnosRelationManager;
 use App\Models\Paciente;
 use App\Models\ObraSocial;
 
