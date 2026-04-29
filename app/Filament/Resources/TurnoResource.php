@@ -153,18 +153,27 @@ class TurnoResource extends Resource
             /**
              * Selección de paciente
              */
-            Select::make('paciente_id')
-                ->label('Paciente')
-                ->options(
-                    \App\Models\Paciente::query()
-                        ->orderBy('apellido')
-                        ->get()
-                        ->mapWithKeys(fn ($p) => [
-                            $p->id => $p->apellido . ', ' . $p->nombre
-                        ])
-                )
-                ->searchable()
-                ->required(),
+Select::make('paciente_id')
+    ->label('Paciente')
+    ->relationship(
+        name: 'paciente',
+        titleAttribute: 'apellido'
+    )
+    ->searchable(['apellido', 'nombre'])
+    ->preload(false)
+    ->required(),
+            // Select::make('paciente_id')
+            //     ->label('Paciente')
+            //     ->options(
+            //         \App\Models\Paciente::query()
+            //             ->orderBy('apellido')
+            //             ->get()
+            //             ->mapWithKeys(fn ($p) => [
+            //                 $p->id => $p->apellido . ', ' . $p->nombre
+            //             ])
+            //     )
+            //     ->searchable()
+            //     ->required(),
 
             /**
              * Estado del turno

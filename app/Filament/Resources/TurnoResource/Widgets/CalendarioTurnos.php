@@ -14,6 +14,8 @@ class CalendarioTurnos extends FullCalendarWidget
 {
     public Model|string|null $model = Turno::class;
 
+    protected static bool $isLazy = true;
+
     public function config(): array
     {
         return [

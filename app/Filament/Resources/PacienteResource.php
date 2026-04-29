@@ -14,10 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * COMPONENTES DE FORMULARIO
  */
+
 use Filament\Forms\Components\{
     TextInput,
     DatePicker,
@@ -34,6 +36,7 @@ use Filament\Forms\Components\{
 /**
  * COMPONENTES DE TABLA
  */
+
 use Filament\Tables\Columns\{
     TextColumn,
     IconColumn
@@ -42,6 +45,7 @@ use Filament\Tables\Columns\{
 /**
  * FILTROS
  */
+
 use Filament\Tables\Filters\{
     SelectFilter,
     Filter
@@ -50,6 +54,7 @@ use Filament\Tables\Filters\{
 /**
  * ACCIONES
  */
+
 use Filament\Tables\Actions\{
     ViewAction,
     EditAction,
@@ -61,6 +66,7 @@ use Filament\Tables\Actions\{
 /**
  * INFOLIST (VIEW)
  */
+
 use Filament\Infolists\Components\{
     TextEntry,
     IconEntry,
@@ -69,17 +75,18 @@ use Filament\Infolists\Components\{
     RepeatableEntry,
     ImageEntry,
     ViewEntry
-
 };
 
 /**
  * EXPORTACIÓN
  */
+
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
 /**
  * PÁGINAS
  */
+
 use App\Filament\Resources\PacienteResource\Pages\{
     ListPacientes,
     CreatePaciente,
@@ -141,8 +148,16 @@ class PacienteResource extends Resource
      */
     public static function getNavigationBadge(): ?string
     {
-        return Paciente::count();
+        return Cache::remember(
+            'pacientes_count',
+            60,
+            fn() => Paciente::count()
+        );
     }
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     return Paciente::count();
+    // }
 
     /**
      * Color del badge (opcional)
@@ -188,7 +203,8 @@ class PacienteResource extends Resource
                             Select::make('obra_social_id')
                                 ->label('Obra Social')
                                 ->relationship('obraSocial', 'alias')
-                                ->getOptionLabelFromRecordUsing(fn ($record) =>
+                                ->getOptionLabelFromRecordUsing(
+                                    fn($record) =>
                                     "{$record->alias} - {$record->nombre}"
                                 )
                                 ->searchable()
@@ -239,7 +255,7 @@ class PacienteResource extends Resource
 
                             Textarea::make('detalle_alergias')
                                 ->label('Detalle de alergias')
-                                ->visible(fn ($get) => $get('alergias')),
+                                ->visible(fn($get) => $get('alergias')),
 
                             Toggle::make('cirugias')
                                 ->label('¿Tiene cirugías?')
@@ -247,7 +263,7 @@ class PacienteResource extends Resource
 
                             Textarea::make('detalle_cirugias')
                                 ->label('Detalle de cirugías')
-                                ->visible(fn ($get) => $get('cirugias')),
+                                ->visible(fn($get) => $get('cirugias')),
 
                             Textarea::make('enfermedades_hereditarias')
                                 ->label('Enfermedades Hereditarias')
@@ -359,7 +375,7 @@ class PacienteResource extends Resource
 
                 TextColumn::make('presion_arterial')
                     ->label('Presión arterial')
-                    ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
+                    ->formatStateUsing(fn($state) => $state ? $state . ' mmHg' : '-')
                     ->badge()
                     ->color('primary'),
             ])
@@ -371,7 +387,7 @@ class PacienteResource extends Resource
                 SelectFilter::make('obra_social_id')
                     ->label('Obra Social')
                     ->relationship('obraSocial', 'alias'),
-                    
+
                 Filter::make('apellido')
                     ->label('Buscar por apellido')
                     ->form([
@@ -406,12 +422,13 @@ class PacienteResource extends Resource
                      */
                     ViewAction::make()
                         ->label('Ver')
-                        ->modalHeading(fn ($record) =>
+                        ->modalHeading(
+                            fn($record) =>
                             'Paciente: ' .
-                            $record->apellido . ' ' .
-                            $record->nombre .
-                            ' | DNI: ' .
-                            $record->dni
+                                $record->apellido . ' ' .
+                                $record->nombre .
+                                ' | DNI: ' .
+                                $record->dni
                         )
                         ->modalWidth('5xl')
                         ->infolist([
@@ -423,7 +440,7 @@ class PacienteResource extends Resource
                                         ->schema([
                                             TextEntry::make('nombre_completo')
                                                 ->label('◾ PACIENTE:')
-                                                ->state(fn ($record) => "{$record->apellido}, {$record->nombre}"),
+                                                ->state(fn($record) => "{$record->apellido}, {$record->nombre}"),
 
                                             TextEntry::make('dni')->label('◾ DNI:'),
 
@@ -459,11 +476,11 @@ class PacienteResource extends Resource
                                             IconEntry::make('cirugias')->label('◾ CIRUGÍA:')->boolean(),
 
                                             TextEntry::make('detalle_alergias')
-                                                ->visible(fn ($record) => $record->alergias)
+                                                ->visible(fn($record) => $record->alergias)
                                                 ->label('◾ DETALLE ALERGIA:'),
 
                                             TextEntry::make('detalle_cirugias')
-                                                ->visible(fn ($record) => $record->cirugias)
+                                                ->visible(fn($record) => $record->cirugias)
                                                 ->label('◾ DETALLE CIRUGÍA:'),
 
                                             TextEntry::make('peso')
@@ -474,7 +491,7 @@ class PacienteResource extends Resource
 
                                             TextEntry::make('presion_arterial')
                                                 ->label('◾ PRESIÓN ARTERIAL:')
-                                                ->formatStateUsing(fn ($state) => $state ? $state . ' mmHg' : '-')
+                                                ->formatStateUsing(fn($state) => $state ? $state . ' mmHg' : '-')
                                                 ->badge()
                                                 ->color('primary'),
 
@@ -502,8 +519,8 @@ class PacienteResource extends Resource
                         ->modalDescription('¿Estás seguro de eliminar este paciente?')
                         ->modalSubmitActionLabel('Sí, eliminar'),
                 ])
-                ->icon('heroicon-m-ellipsis-vertical') // ← los 3 puntitos
-                ->label('')
+                    ->icon('heroicon-m-ellipsis-vertical') // ← los 3 puntitos
+                    ->label('')
             ])
 
             /**

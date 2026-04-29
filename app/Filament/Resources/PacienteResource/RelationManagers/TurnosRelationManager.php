@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ObraSocialResource\RelationManagers;
+namespace App\Filament\Resources\PacienteResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
