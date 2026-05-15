@@ -278,13 +278,7 @@ class TurnoResource extends Resource
 
                 TextColumn::make('paciente.obraSocial.alias')
                     ->label('Obra Social')
-                    ->formatStateUsing(function ($state, $record) {
-                        $obra = $record->paciente?->obraSocial;
-
-                        return $obra
-                            ? "{$obra->alias} - {$obra->nombre}"
-                            : '-';
-                    })
+                    ->placeholder('-')
                     ->searchable(),
 
                 BadgeColumn::make('estado')
