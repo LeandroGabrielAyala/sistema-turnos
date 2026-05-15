@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * COMPONENTES DE FORMULARIO
  */
+
 use Filament\Forms\Components\{
     Select,
     DatePicker,
@@ -26,6 +27,7 @@ use Filament\Forms\Components\{
 /**
  * COMPONENTES DE TABLA
  */
+
 use Filament\Tables\Columns\{
     TextColumn,
     BadgeColumn,
@@ -35,6 +37,7 @@ use Filament\Tables\Columns\{
 /**
  * FILTROS
  */
+
 use Filament\Tables\Filters\{
     SelectFilter,
     Filter
@@ -43,6 +46,7 @@ use Filament\Tables\Filters\{
 /**
  * ACCIONES
  */
+
 use Filament\Tables\Actions\{
     ViewAction,
     EditAction,
@@ -54,6 +58,7 @@ use Filament\Tables\Actions\{
 /**
  * INFOLIST (VIEW)
  */
+
 use Filament\Infolists\Components\{
     TextEntry,
     IconEntry,
@@ -153,18 +158,19 @@ class TurnoResource extends Resource
             /**
              * Selección de paciente
              */
-Select::make('paciente_id')
-    ->label('Paciente')
-    ->relationship(
-        name: 'paciente',
-        titleAttribute: 'apellido'
-    )
-    ->getOptionLabelFromRecordUsing(fn ($record) =>
-        "{$record->apellido}, {$record->nombre}"
-    )
-    ->searchable(['apellido', 'nombre'])
-    ->preload(false)
-    ->required(),
+            Select::make('paciente_id')
+                ->label('Paciente')
+                ->relationship(
+                    name: 'paciente',
+                    titleAttribute: 'apellido'
+                )
+                ->getOptionLabelFromRecordUsing(
+                    fn($record) =>
+                    "{$record->apellido}, {$record->nombre}"
+                )
+                ->searchable(['apellido', 'nombre'])
+                ->preload(false)
+                ->required(),
             // Select::make('paciente_id')
             //     ->label('Paciente')
             //     ->options(
@@ -217,7 +223,7 @@ Select::make('paciente_id')
              */
             Textarea::make('observacion_medica')
                 ->label('Observación del médico')
-                ->visible(fn ($get) => $get('estado') === 'atendido')
+                ->visible(fn($get) => $get('estado') === 'atendido')
                 ->columnSpanFull(),
 
             /**
@@ -227,7 +233,7 @@ Select::make('paciente_id')
                 ->label('Estudios solicitados')
                 ->multiple()
                 ->options(Turno::ESTUDIOS)
-                ->visible(fn ($get) => $get('estado') === 'atendido')
+                ->visible(fn($get) => $get('estado') === 'atendido')
                 ->columnSpanFull(),
         ]);
     }
@@ -245,13 +251,13 @@ Select::make('paciente_id')
              */
             ->columns([
                 TextColumn::make('fecha')
-                    ->label('Fecha')
-                    ->date('d/m/Y')
-                    ->sortable(),
-
-                TextColumn::make('hora')
-                    ->label('Hora')
-                    ->sortable(),
+                    ->label('Fecha - Hora')
+                    ->sortable()
+                    ->formatStateUsing(function ($record) {
+                        return $record->fecha->format('d/m/Y') .
+                            ' - ' .
+                            \Carbon\Carbon::parse($record->hora)->format('H:i');
+                    }),
 
                 TextColumn::make('paciente.nombre_completo')
                     ->label('Paciente')
@@ -269,6 +275,17 @@ Select::make('paciente_id')
                                 $direction
                             );
                     }),
+
+                TextColumn::make('paciente.obraSocial.alias')
+                    ->label('Obra Social')
+                    ->formatStateUsing(function ($state, $record) {
+                        $obra = $record->paciente?->obraSocial;
+
+                        return $obra
+                            ? "{$obra->alias} - {$obra->nombre}"
+                            : '-';
+                    })
+                    ->searchable(),
 
                 BadgeColumn::make('estado')
                     ->label('Estado')
@@ -337,12 +354,13 @@ Select::make('paciente_id')
 
                 Action::make('atender')
                     ->label('Atender')
-                    ->modalHeading(fn ($record) => 
+                    ->modalHeading(
+                        fn($record) =>
                         'ATENDIDO - Completar el Turno de ' . $record->paciente->nombre_completo
                     )
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->visible(fn ($record) => $record->estado === 'confirmado')
+                    ->visible(fn($record) => $record->estado === 'confirmado')
                     ->form([
                         Textarea::make('observacion_medica')
                             ->label('Observación del Médico:')
@@ -376,10 +394,11 @@ Select::make('paciente_id')
                  */
                 ViewAction::make()
                     ->label('Ver')
-                    ->modalHeading(fn ($record) =>
+                    ->modalHeading(
+                        fn($record) =>
                         'Detalle del Turno - ' .
-                        $record->fecha->format('d/m/Y') . ' ' .
-                        $record->hora
+                            $record->fecha->format('d/m/Y') . ' ' .
+                            $record->hora
                     )
                     ->modalWidth('4xl')
                     ->infolist([
@@ -395,7 +414,7 @@ Select::make('paciente_id')
                                         TextEntry::make('estado')
                                             ->label('◾ ESTADO')
                                             ->badge()
-                                            ->color(fn ($state) => match ($state) {
+                                            ->color(fn($state) => match ($state) {
                                                 'confirmado' => 'info',
                                                 'cancelado' => 'danger',
                                                 'atendido' => 'success',
@@ -419,11 +438,11 @@ Select::make('paciente_id')
 
                                         TextEntry::make('observacion_medica')
                                             ->label('◾ OBSERVACIÓN MÉDICO')
-                                            ->visible(fn ($record) => $record->estado === 'atendido'),
+                                            ->visible(fn($record) => $record->estado === 'atendido'),
 
                                         TextEntry::make('estudios_formateados')
                                             ->label('◾ ESTUDIOS')
-                                            ->visible(fn ($record) => $record->estado === 'atendido')
+                                            ->visible(fn($record) => $record->estado === 'atendido')
                                             ->badge()
                                             ->placeholder('Sin estudios solicitados')
                                             ->separator(','),
@@ -436,7 +455,7 @@ Select::make('paciente_id')
                                     ->schema([
                                         TextEntry::make('paciente.dni')
                                             ->label('◾ DNI:'),
-                                            
+
                                         TextEntry::make('paciente.telefono')
                                             ->label('◾ TELÉFONO'),
 
@@ -489,13 +508,13 @@ Select::make('paciente_id')
             ->defaultSort('fecha', 'desc');
     }
 
-        /**
-         * REDIRECCIONAR A LIST
-         */
-        public static function getRedirectUrl(): string
-        {
-            return static::getUrl('index');
-        }
+    /**
+     * REDIRECCIONAR A LIST
+     */
+    public static function getRedirectUrl(): string
+    {
+        return static::getUrl('index');
+    }
 
     /**
      * 🔗 RELACIONES (si hay RelationManagers)
